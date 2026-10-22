@@ -1,7 +1,8 @@
 
 /* ================= Banks: save your stuff, take it out when you need it =================
    One bank each for chromos, coins, power points, gems and drops. Every bank holds up to 100,000 and has its own keeper. */
-const BANK_MAX=100000;
+const BANK_MAX=100000,BANK_MAX_DROPS=500;
+const bankMax=k=>k==='drops'?BANK_MAX_DROPS:BANK_MAX;
 const BANKS=[
   {k:'chromos',name:'Chromo Vault',keeper:'Vaulty',rid:'clank',col:'#46b4ff',col2:'#123a6e',hat:'fedora',body:'#7fc4ff',belly:'#e3f4ff',accent:'#ffd23f',lines:['Your chromos are safe with me!','Beep boop. Vault locked tight.','Saving up for something big?','I count every chromo. Twice.']},
   {k:'coins',name:'Coin Bank',keeper:'Penny',rid:'coco',col:'#ffd23f',col2:'#7a4a00',hat:'crown',body:'#ffcf5a',belly:'#fff6d0',accent:'#ff8a1f',lines:['Shiny coins, all in a row!','A coin saved is a coin earned.','Clink clink! Love that sound.','Your piggy bank is my piggy bank.']},
@@ -9,7 +10,7 @@ const BANKS=[
   {k:'gems',name:'Gem Bank',keeper:'Jewel',rid:'luna',col:'#3fe0a0',col2:'#0f4b3c',hat:'icecrown',body:'#7ff0c2',belly:'#e9fff6',accent:'#ff7ad9',lines:['Every gem polished and safe.','Ooh, sparkly! I’ll guard these.','Gems love a cozy vault.','Not even a speck of dust in here.']},
   {k:'drops',name:'Drop Locker',keeper:'Locksmith',rid:'boulder',col:'#ff8a5c',col2:'#5a1f0a',hat:'hardhat',body:'#c8875a',belly:'#f3d9c2',accent:'#ffd23f',lines:['I’ll keep your drops sealed!','Nobody opens these but you.','Heavy lifting? That’s my job.','Locked, stacked and ready.']}];
 const BANK_BY={};for(const b of BANKS)BANK_BY[b.k]=b;
-{const o=S.bank&&typeof S.bank==='object'?S.bank:{};S.bank={drops:Array.isArray(o.drops)?o.drops.filter(d=>d&&typeof d==='object'&&(RARITY[d.r]||RARITY[d.min])).slice(0,BANK_MAX):[]};
+{const o=S.bank&&typeof S.bank==='object'?S.bank:{};S.bank={drops:Array.isArray(o.drops)?o.drops.filter(d=>d&&typeof d==='object'&&(RARITY[d.r]||RARITY[d.min])):[]};if(S.bank.drops.length>BANK_MAX_DROPS)S.drops=S.drops.concat(S.bank.drops.splice(BANK_MAX_DROPS));
   for(const b of BANKS)if(b.k!=='drops')S.bank[b.k]=clamp(Math.floor(+o[b.k]||0),0,BANK_MAX);}
 const bankHas=k=>k==='drops'?S.bank.drops.length:S.bank[k]|0;
 const walletHas=k=>k==='drops'?S.drops.length:S[k]|0;
@@ -29,7 +30,7 @@ function bankScene(bk,w,h,st){const cv=document.createElement('canvas'),d=Math.m
     const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,bk.col2);g.addColorStop(1,'#120f26');rrect(c,0,0,w,h,16);c.fillStyle=g;c.fill();
     c.save();rrect(c,0,0,w,h,16);c.clip();
     c.fillStyle='rgba(255,255,255,.05)';for(let x=-h;x<w;x+=26){c.beginPath();c.moveTo(x,h);c.lineTo(x+h,0);c.lineTo(x+h+10,0);c.lineTo(x+10,h);c.closePath();c.fill();}
-    /* vault */const vx=w*.68,vy=h*.52,vr=Math.min(h*.38,w*.2),fill=clamp(bankHas(bk.k)/BANK_MAX,0,1);
+    /* vault */const vx=w*.68,vy=h*.52,vr=Math.min(h*.38,w*.2),fill=clamp(bankHas(bk.k)/bankMax(bk.k),0,1);
     c.fillStyle='#2a2560';c.strokeStyle=OUT;c.lineWidth=4;rrect(c,vx-vr*1.25,vy-vr*1.2,vr*2.5,vr*2.4,14);c.fill();c.stroke();
     c.save();c.beginPath();c.arc(vx,vy,vr,0,TAU);c.clip();c.fillStyle='#120f26';c.fillRect(vx-vr,vy-vr,vr*2,vr*2);
     const sh=vr*2*fill;c.fillStyle=bk.col;c.globalAlpha=.85;c.fillRect(vx-vr,vy+vr-sh,vr*2,sh);c.globalAlpha=1;
@@ -47,9 +48,9 @@ function bankScene(bk,w,h,st){const cv=document.createElement('canvas'),d=Math.m
   const tick=()=>{if(cv.isConnected)seen=true;else if(seen||Date.now()-born>6000)return;draw(performance.now()/1000);requestAnimationFrame(tick);};tick();cv._st=st;return cv;}
 function bankSummary(){const parts=[];for(const b of BANKS){const v=bankHas(b.k);if(v)parts.push(fmt(v)+' '+(b.k==='drops'?'drop'+(v>1?'s':''):CUR_NAME[b.k]));}return parts;}
 function openBanks(){openSheet(card=>{card.classList.add('banks');
-  card.insertAdjacentHTML('beforeend','<p class="of-kick bank-kick">🏦 Banks</p><h2>Banks</h2><p class="sub">Put things away to keep them safe, and take them out whenever you need them. Each bank holds up to <b>100,000</b>.</p>');
+  card.insertAdjacentHTML('beforeend','<p class="of-kick bank-kick">🏦 Banks</p><h2>Banks</h2><p class="sub">Put things away to keep them safe, and take them out whenever you need them. Each bank holds up to <b>100,000</b>, and the Drop Locker holds <b>500 drops</b>.</p>');
   for(const bk of BANKS){const row=document.createElement('button');row.className='bank-row';row.style.setProperty('--bc',bk.col);row.append(bankScene(bk,132,92));
-    const v=bankHas(bk.k);row.insertAdjacentHTML('beforeend','<div><b>'+esc(bk.name)+'</b><small>Keeper: '+esc(bk.keeper)+'</small><span class="bank-bar"><i style="width:'+Math.round(v/BANK_MAX*100)+'%"></i></span><span class="bank-num">'+(bk.k==='drops'?'':ICON[bk.k])+fmtFull(v)+' / '+fmt(BANK_MAX)+'</span></div>');
+    const v=bankHas(bk.k);row.insertAdjacentHTML('beforeend','<div><b>'+esc(bk.name)+'</b><small>Keeper: '+esc(bk.keeper)+'</small><span class="bank-bar"><i style="width:'+Math.round(v/bankMax(bk.k)*100)+'%"></i></span><span class="bank-num">'+(bk.k==='drops'?'':ICON[bk.k])+fmtFull(v)+' / '+fmt(bankMax(bk.k))+'</span></div>');
     row.addEventListener('click',()=>{sfx('click');openBank(bk.k);});card.append(row);}
   const x=document.createElement('button');x.className='btn';x.textContent='Close';x.addEventListener('click',closeSheet);card.append(x);});}
 function openBank(k){const bk=BANK_BY[k],st={fx:[]};openSheet(card=>{card.classList.add('banks','bank-one');card.style.setProperty('--bc',bk.col);
@@ -59,14 +60,14 @@ function openBank(k){const bk=BANK_BY[k],st={fx:[]};openSheet(card=>{card.classL
   const bub=document.createElement('div');bub.className='bank-bubble';bub.innerHTML='<b>'+esc(bk.keeper)+':</b> '+esc(pick(bk.lines));scene.append(bub);card.append(scene);
   const say=t=>{bub.innerHTML='<b>'+esc(bk.keeper)+':</b> '+esc(t);bub.animate&&bub.animate([{transform:'scale(.9)'},{transform:'scale(1)'}],{duration:180});};
   const nums=document.createElement('div');nums.className='bank-nums';card.append(nums);
-  const drawNums=()=>{const ic=k==='drops'?'🎁':ICON[k];nums.innerHTML='<div><small>In the bank</small><b>'+ic+fmtFull(bankHas(k))+'</b><span class="bank-bar"><i style="width:'+Math.round(bankHas(k)/BANK_MAX*100)+'%"></i></span><small>max '+fmtFull(BANK_MAX)+'</small></div><div><small>With you</small><b>'+ic+fmtFull(walletHas(k))+'</b></div>';};drawNums();
+  const drawNums=()=>{const ic=k==='drops'?'🎁':ICON[k];nums.innerHTML='<div><small>In the bank</small><b>'+ic+fmtFull(bankHas(k))+'</b><span class="bank-bar"><i style="width:'+Math.round(bankHas(k)/bankMax(k)*100)+'%"></i></span><small>max '+fmtFull(bankMax(k))+'</small></div><div><small>With you</small><b>'+ic+fmtFull(walletHas(k))+'</b></div>';};drawNums();
   const fly=dir=>{const t0=performance.now()/1000;for(let i=0;i<6;i++)st.fx.push({t0:t0+i*.06,dir,ox:(i-3)*4});};
   const done=(dir,n)=>{fly(dir);sfx(dir>0?'buy':'coin');persist();drawNums();renderHome();if(typeof ridUpload==='function')ridUpload(false).catch(()=>{});say(dir>0?'Saved '+fmtFull(n)+(k==='drops'?' drop'+(n>1?'s':''):' '+CUR_NAME[k])+'. Locked away!':'Here you go: '+fmtFull(n)+(k==='drops'?' drop'+(n>1?'s':''):' '+CUR_NAME[k])+'.');};
   if(k==='drops'){const box=document.createElement('div');box.className='bank-drops';card.append(box);
     const drawDrops=()=>{box.innerHTML='';const keys=[...new Set(S.drops.map(dropKey).concat(S.bank.drops.map(dropKey)))];if(!keys.length){box.innerHTML='<p class="sub">You have no drops yet. Win matches to earn some!</p>';return;}
       for(const key of keys){const inB=S.bank.drops.filter(d=>dropKey(d)===key).length,inW=S.drops.filter(d=>dropKey(d)===key).length,r=document.createElement('div');r.className='bank-drop';r.append(dropCanvas(key,40));
         r.insertAdjacentHTML('beforeend','<div><b>'+esc(dropName(key))+'</b><small>'+inW+' with you · '+inB+' in the bank</small></div>');
-        const dep=document.createElement('button');dep.className='tpill';dep.textContent='Save all';dep.disabled=!inW||bankHas('drops')>=BANK_MAX;dep.addEventListener('click',()=>{const room=BANK_MAX-bankHas('drops');let n=0;for(let i=S.drops.length-1;i>=0&&n<room;i--)if(dropKey(S.drops[i])===key){S.bank.drops.push(S.drops.splice(i,1)[0]);n++;}if(n)done(1,n);drawDrops();});
+        const dep=document.createElement('button');dep.className='tpill';dep.textContent='Save all';dep.disabled=!inW||bankHas('drops')>=BANK_MAX_DROPS;dep.addEventListener('click',()=>{const room=BANK_MAX_DROPS-bankHas('drops');let n=0;for(let i=S.drops.length-1;i>=0&&n<room;i--)if(dropKey(S.drops[i])===key){S.bank.drops.push(S.drops.splice(i,1)[0]);n++;}if(n)done(1,n);else say('The Drop Locker is full! It holds '+BANK_MAX_DROPS+' drops.');if(n&&bankHas('drops')>=BANK_MAX_DROPS)setTimeout(()=>say('That\u2019s it, the locker is full: '+BANK_MAX_DROPS+' drops!'),900);drawDrops();});
         const wd=document.createElement('button');wd.className='tpill';wd.textContent='Take all';wd.disabled=!inB;wd.addEventListener('click',()=>{let n=0;for(let i=S.bank.drops.length-1;i>=0;i--)if(dropKey(S.bank.drops[i])===key){S.drops.push(S.bank.drops.splice(i,1)[0]);n++;}if(n)done(-1,n);drawDrops();});
         r.append(dep,wd);box.append(r);}};drawDrops();}
   else{let amt=Math.min(1000,Math.max(1,walletHas(k)||bankHas(k)||100));const inp=document.createElement('input');inp.type='number';inp.min='1';inp.max=String(BANK_MAX);inp.inputMode='numeric';inp.className='rid-in bank-in';inp.value=String(amt);

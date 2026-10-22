@@ -6,7 +6,10 @@ const solStepCost=n=>n>=SOLAR_STEPS?SOLDAR_COST:solCost(n);
 const SOLDAR_PINS4=['sdr_crown','sdr_flame','sdr_gg','sdr_eye'];
 const SOL_PF=[[1,'title','t_spark'],[3,'title','t_sun'],[5,'banner','b_solar'],[6,'ncol','n_solar'],[7,'frame','f_solar'],[9,'title','t_eclipse'],[10,'title','t_fame'],[10,'ncol','n_fame']];
 const SOL_KIND={banner:'banner',frame:'icon frame',title:'title',ncol:'name color'};
-const solOpen=()=>RUMBLERS.every(b=>S.owned[b.id]);
+/* exclusive rumblers from past events and passes (like Dark and Orion) don't count, so you can still start Solar if you missed them */
+const solPastExclusive=b=>!!(RARITY[b.rarity].passOnly||b.eventOnly);
+const solNeeded=()=>RUMBLERS.filter(b=>!solPastExclusive(b));
+const solOpen=()=>solNeeded().every(b=>S.owned[b.id]);
 const solCash=L=>({gems:25+L*15,coins:1000*L,pp:400*L});
 /* what step i (0-based) gives you */
 function solRewards(i){if(i>=SOLAR_STEPS)return soldarRewards();const L=Math.floor(i/3)+1,k=i%3,name=SOLAR_LEVELS[L-1].name,out=[];
@@ -47,10 +50,10 @@ function solReveal(i){const sd=i>=SOLAR_STEPS,L=sd?11:Math.floor(i/3)+1,k=i%3,fa
 function openSolars(){const n=S.sol|0,open=solOpen(),sd=n>SOLAR_STEPS,L=sd?11:Math.max(1,Math.ceil(n/3));openSheet(card=>{card.classList.add('sol');if(sd)card.classList.add('soldar');
   const head=document.createElement('div');head.className='sol-head';head.append(n?solarCanvas(L,104,true):solarCanvas(0,104));
   head.insertAdjacentHTML('beforeend','<div><p class="of-kick sol-kick">☀️ Solar</p><h2>'+esc(solStepName(n))+'</h2><small>'+(sd?'The final level':n>=SOLAR_STEPS?'Solar complete \u00b7 Soldar is next':'Step '+n+' of '+SOLAR_STEPS)+'</small><span class="sol-bal">'+ICON.chromos+fmtFull(S.chromos)+' chromos</span></div>');card.append(head);
-  card.insertAdjacentHTML('beforeend','<p class="sub">Solar is for players who have <b>every rumbler</b>. Spend chromos to climb 10 levels, each with 3 steps: <b>I</b> gives a pin and an icon, <b>II</b> gives gems, coins and power points plus an <b>animated</b> pin and icon, and <b>III</b> gives an exclusive skin. After <b>Solar Fame</b> comes <b>Soldar</b>: one final level with no steps.</p>');
-  if(!open){const all=RUMBLERS.length,own=RUMBLERS.filter(b=>S.owned[b.id]).length,c=document.createElement('div');c.className='sol-next sol-lock';
-    c.innerHTML='<div class="sol-nt"><b>🔒 Locked</b><small>'+own+' / '+all+' rumblers</small></div><div class="tbar sol-bar"><i style="width:'+Math.round(own/all*100)+'%"></i></div><p class="sol-need">Unlock every rumbler in the game to start Solar.</p>';
-    const miss=document.createElement('div');miss.className='sol-miss';for(const b of RUMBLERS.filter(b=>!S.owned[b.id]).slice(0,12)){const t=thumb(b,getSkin(b,'classic'),40);t.classList.add('lockd');t.title=b.name;miss.append(t);}c.append(miss);card.append(c);}
+  card.insertAdjacentHTML('beforeend','<p class="sub">Solar is for players who have <b>every rumbler</b> (past exclusives like Dark and Orion don\u2019t count). Spend chromos to climb 10 levels, each with 3 steps: <b>I</b> gives a pin and an icon, <b>II</b> gives gems, coins and power points plus an <b>animated</b> pin and icon, and <b>III</b> gives an exclusive skin. After <b>Solar Fame</b> comes <b>Soldar</b>: one final level with no steps.</p>');
+  if(!open){const need=solNeeded(),all=need.length,own=need.filter(b=>S.owned[b.id]).length,c=document.createElement('div');c.className='sol-next sol-lock';
+    c.innerHTML='<div class="sol-nt"><b>🔒 Locked</b><small>'+own+' / '+all+' rumblers</small></div><div class="tbar sol-bar"><i style="width:'+Math.round(own/all*100)+'%"></i></div><p class="sol-need">Unlock every rumbler in the game to start Solar. Past exclusives (like Dark and Orion) don\u2019t count.</p>';
+    const miss=document.createElement('div');miss.className='sol-miss';for(const b of need.filter(b=>!S.owned[b.id]).slice(0,12)){const t=thumb(b,getSkin(b,'classic'),40);t.classList.add('lockd');t.title=b.name;miss.append(t);}c.append(miss);card.append(c);}
   else if(n<SOLDAR_STEP){const c=document.createElement('div'),cost=solStepCost(n);c.className='sol-next'+(n>=SOLAR_STEPS?' soldar':n+1>=SOLAR_STEPS-2?' fame':'');
     c.innerHTML='<div class="sol-nt"><b>Next: '+esc(solStepName(n+1))+'</b><small>'+(n>=SOLAR_STEPS?'Final level':'Step '+(n+1))+'</small></div>';const rr=document.createElement('div');rr.className='sol-rw';for(const r of solRewards(n)){const d=document.createElement('div');d.title=r.label;d.append(r.vis(48));d.insertAdjacentHTML('beforeend','<small>'+esc(r.label)+'</small>');rr.append(d);}c.append(rr);
     const b=document.createElement('button');b.className='btn gold';b.innerHTML='Level up · '+ICON.chromos+fmtFull(cost);if(S.chromos<cost)b.classList.add('short');b.addEventListener('click',solLevelUp);c.append(b);
