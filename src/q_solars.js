@@ -7,7 +7,7 @@ const SOLDAR_PINS4=['sdr_crown','sdr_flame','sdr_gg','sdr_eye'];
 const SOL_PF=[[1,'title','t_spark'],[3,'title','t_sun'],[5,'banner','b_solar'],[6,'ncol','n_solar'],[7,'frame','f_solar'],[9,'title','t_eclipse'],[10,'title','t_fame'],[10,'ncol','n_fame']];
 const SOL_KIND={banner:'banner',frame:'icon frame',title:'title',ncol:'name color'};
 /* exclusive rumblers from past events and passes (like Dark and Orion) don't count, so you can still start Solar if you missed them */
-const solPastExclusive=b=>!!(RARITY[b.rarity].passOnly||b.eventOnly);
+const solPastExclusive=b=>!!(RARITY[b.rarity].passOnly||b.eventOnly||b.beta);
 const solNeeded=()=>RUMBLERS.filter(b=>!solPastExclusive(b));
 const solOpen=()=>solNeeded().every(b=>S.owned[b.id]);
 const solCash=L=>({gems:25+L*15,coins:1000*L,pp:400*L});

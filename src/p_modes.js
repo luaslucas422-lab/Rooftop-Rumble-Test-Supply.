@@ -41,8 +41,9 @@ const TESTER_QS=[
   {q:'Someone asks you to share new beta features before they’re released. What do you do?',a:['Post them everywhere','Keep them secret until they come out','Sell screenshots','Make up fake ones'],ok:1},
   {q:'Which rumbler does every player start with?',a:['Bolt','Ember','Dark','Orion'],ok:1},
   {q:'How many players are on each team in a 3v3 match?',a:['2','3','4','6'],ok:1},
+  {q:'Some things in the beta might never be added to the main game. Is that okay?',a:['No, everything must come out','Yes, beta stuff is a test and might not be added','Only if it’s a rumbler I like','I’ll quit if it doesn’t'],ok:1},
   {q:'What’s the best way to describe a bug?',a:['“It’s broken”','What you did, what happened, and what you expected to happen','A long angry message','Nothing, they’ll find it'],ok:1}];
-const TESTER_PASS=6;
+const TESTER_PASS=7;
 function openTesterApply(){let wait=0;try{wait=+localStorage.getItem(TESTER_WAIT_KEY)||0;}catch(e){}
   if(rrIsTester()){toast('You’re already a beta tester!');return;}
   if(wait>Date.now()){const m=Math.ceil((wait-Date.now())/60000);openSheet(card=>{card.classList.add('rid','tester');card.insertAdjacentHTML('beforeend','<p class="of-kick tester-kick">Beta tester application</p><h2>Try again soon</h2><p class="sub">You can take the questions again in <b>'+m+' minute'+(m>1?'s':'')+'</b>. Read each question carefully next time!</p>');const x=document.createElement('button');x.className='btn';x.textContent='OK';x.addEventListener('click',closeSheet);card.append(x);});return;}

@@ -118,7 +118,7 @@ function netOnMsg(m){
   else if(m.t==='snap')netApplySnap(m.s);
   else if(m.t==='end')netEndClient(m);}
 /* matchmaking */
-function netCanPlay(){return S.playOnline!==false&&NETW.ok;}
+function netCanPlay(){const sb=BY_ID[S.selected];if(sb&&sb.beta)return false;return S.playOnline!==false&&NETW.ok;}
 function netTeamCap(m){m=MODE_BY[m];if(!m)return 3;if(m.id==='duel'||m.ffa)return 1;if(m.sd)return m.size||1;return 3;}
 function netQueue(modeId){if((NETW.party||[]).length+1>netTeamCap(modeId)){toast('<b style="color:#ff5d57">TOO MANY PEOPLE IN PARTY!</b>');sfx('thud');return;}const b=BY_ID[S.selected],me=S.owned[b.id];audio();sfx('click');
   netSend({t:'queue',mode:modeId,load:{rumbler:b.id,skin:me.skin,lvl:me.lvl,gadget:me.gadget,star:me.star,name:safeName(S.name),trophies:S.trophies|0}});
