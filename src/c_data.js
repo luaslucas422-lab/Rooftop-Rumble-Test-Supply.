@@ -391,9 +391,9 @@ const skinPinFaces=sk=>sk.tier!==0?['happy','angry','sad','cool','love']:null;
 const isSkinPin=id=>{const m=/^sk:([a-z]+):([a-z_0-9]+)(?::(happy|angry|sad|cool|love))?$/.exec(id);return!!(m&&BY_ID[m[1]]&&skinsOf(BY_ID[m[1]]).some(k=>k.id===m[2]));};
 const skinHasPin=sk=>sk.tier!==0&&sk.tier!=='master';
 /* How flashy a skin's takedown and spawn effects are: 0 none, 1 small, 2 medium, 3 big */
-const skinFx=sk=>sk.ultraFx||sk.fame?4:sk.tier==='solar'?3:sk.tier==='halloween'||sk.tier==='exclusive'?3:sk.supercharged?0:sk.tier==='power'?4:sk.tier==='golden'?3:sk.tier==='troll'?2:sk.charged||sk.tier===3||sk.tier==='sig'||sk.tier==='pass'||sk.tier==='master'?3:sk.tier===2||sk.tier==='rank'?2:sk.tier===1||sk.tier==='prestige'?1:0;
+const skinFx=sk=>sk.ultraFx||sk.fame?4:sk.tier==='solar'||sk.tier==='tester'?3:sk.tier==='halloween'||sk.tier==='exclusive'?3:sk.supercharged?0:sk.tier==='power'?4:sk.tier==='golden'?3:sk.tier==='troll'?2:sk.charged||sk.tier===3||sk.tier==='sig'||sk.tier==='pass'||sk.tier==='master'?3:sk.tier===2||sk.tier==='rank'?2:sk.tier===1||sk.tier==='prestige'?1:0;
 /* skins you can only earn, never buy */
-const earnOnly=sk=>sk.tier==='solar'||sk.tier==='exclusive'||sk.tier==='halloween'||sk.tier==='pass'||sk.tier==='master'||sk.tier==='rank'||sk.tier==='prestige';
+const earnOnly=sk=>sk.tier==='tester'||sk.tier==='solar'||sk.tier==='exclusive'||sk.tier==='halloween'||sk.tier==='pass'||sk.tier==='master'||sk.tier==='rank'||sk.tier==='prestige';
 const SKIN_PRICE={1:{gems:30,coins:1500,pp:600},2:{gems:60,coins:3000,pp:1200},3:{gems:120,coins:6000,pp:2400},sig:{gems:90,coins:4500,pp:1800}};
 SKIN_PRICE.troll={gems:80,coins:4000,pp:1600};
 /* Golden skins: coins only, always for sale. Power skins: the best rarity, power points only, always for sale. */
@@ -407,7 +407,7 @@ const canQuickChat=()=>S.ageBand&&S.ageBand!=='u7';
 /* Profile icons: rumbler faces you own, trophy milestones, special skins, and rare icons from Rumbler Boxes */
 const TROPHY_ICONS=[250,500,1000,1500,2000,2500,3000,3500,4000,4500,5000];
 const SPECIAL_ICONS=[['crown','\ud83d\udc51','#ffd23f'],['skull','\ud83d\udc80','#c9cfe0'],['star','\u2b50','#ffb547'],['flame','\ud83d\udd25','#ff7a1a'],['heart','\ud83d\udc96','#ff7aa8'],['ghost','\ud83d\udc7b','#b48cff'],['bolt','\u26a1','#5ec8ff'],['moon','\ud83c\udf19','#3b3399'],['dino','\ud83e\udd96','#6be39a'],['alien','\ud83d\udc7d','#7ed957'],['gem','\ud83d\udc8e','#7df9ff'],['cool','\ud83d\ude0e','#ffd23f']];
-const ICON_SKIN_TIERS=['golden','power','halloween','rank','master','exclusive','solar'];
+const ICON_SKIN_TIERS=['golden','power','halloween','rank','master','exclusive','solar','tester'];
 const SPOOKY=['pumpkin','skeleton','zombie'],BOXES=['rbox','sbox'],isSpecialDrop=r=>r==='season'||SPOOKY.includes(r)||BOXES.includes(r),KNOCK_EVERY=5;
 const dropName=r=>RARITY[r]?(RARITY[r].box?RARITY[r].name:RARITY[r].name+' Drop'):'Drop';
 const BOX_PRICE={rbox:70,sbox:80};
@@ -469,6 +469,8 @@ const SOLAR_SKINS=[
 const SOLDAR_SKINS=[
  {lv:11,rid:'orion',skin:{id:'sdr_orion',name:'Soldar',tier:'solar',fame:true,soldar:true,body:'#120f26',belly:'#ffd23f',accent:'#ff3b5c',proj:'#ffb000',eye:'#ffd23f',hat:'crown',glow:'#ff6a00',rim:'#ffd23f',starry:true,shine:true}},
  {lv:11,rid:'zenith',skin:{id:'sdr_meteor',name:'Soldar',tier:'solar',fame:true,soldar:true,body:'#2a0a12',belly:'#ffb000',accent:'#ffd23f',proj:'#ff6a00',eye:'#fff3a6',hat:'spikes',glow:'#ff3b5c',rim:'#ffb000',cracks:true}}];
+/* Beta testers get their own Ember skin */
+const TESTER_SKIN={id:'tester',name:'Beta Tester',tier:'tester',body:'#9d7bff',belly:'#efe6ff',accent:'#2de0b0',proj:'#2de0b0',eye:'#2de0b0',hat:'headphones',glow:'#2de0b0',scan:true};
 const SOL_BY_SKIN={};for(const x of SOLAR_SKINS.concat(SOLDAR_SKINS))SOL_BY_SKIN[x.skin.id]=x;
 const EX_BY_SKIN={};for(const e of EXCLUSIVE_SKINS)EX_BY_SKIN[e.skin.id]=e;
 function skinsOf(b){
@@ -488,6 +490,7 @@ function skinsOf(b){
   if(b.id==='juggler')list.push({...base,...MAID_SKIN,boxy:!!b.boxy});
   for(const e of EXCLUSIVE_SKINS)if(e.rid===b.id)list.push({...base,...e.skin,boxy:!!b.boxy});
   for(const x of SOLAR_SKINS.concat(SOLDAR_SKINS))if(x.rid===b.id)list.push({...base,...x.skin,boxy:!!b.boxy});
+  if(b.id==='ember')list.push({...base,...TESTER_SKIN,boxy:!!b.boxy});
   list.push({...base,...b.sig,id:'sig',tier:'sig'});
   return(b._skins=list);
 }
@@ -659,7 +662,7 @@ const PF_TITLES=[
  {id:'t_trend',name:'Trendsetter',ok:()=>exCount()>=5,how:'Earn 5 exclusive skins'},
  {id:'t_legend',name:'Legend',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'t_master',name:'Master',ok:isMaster,how:'Reach Master in ranked'},
- {id:'t_spark',name:'Spark',ok:()=>solDone(1),how:'Finish Solar level 1'},{id:'t_sun',name:'Sun Chaser',ok:()=>solDone(3),how:'Finish Solar level 3'},{id:'t_eclipse',name:'Eclipse',ok:()=>solDone(9),how:'Finish Solar level 9'},{id:'t_fame',name:'Solar Fame',ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'},{id:'t_soldar',name:'Soldar',ok:()=>(S.sol|0)>SOLAR_STEPS,how:'Reach Soldar'}];
+ {id:'t_spark',name:'Spark',ok:()=>solDone(1),how:'Finish Solar level 1'},{id:'t_sun',name:'Sun Chaser',ok:()=>solDone(3),how:'Finish Solar level 3'},{id:'t_eclipse',name:'Eclipse',ok:()=>solDone(9),how:'Finish Solar level 9'},{id:'t_fame',name:'Solar Fame',ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'},{id:'t_tester',name:'Beta Tester',ok:()=>{try{return!!S.betaTester||localStorage.getItem('rr-beta-tester')==='1';}catch(e){return!!S.betaTester;}},how:'Become a beta tester (Settings)'},{id:'t_soldar',name:'Soldar',ok:()=>(S.sol|0)>SOLAR_STEPS,how:'Reach Soldar'}];
 const GRAD_TXT=g=>'background:'+g+';-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.55))';
 const PF_NCOLS=[
  {id:'n_white',name:'White',css:'color:#ffffff'},{id:'n_sun',name:'Sunny',css:'color:#ffd23f'},{id:'n_pink',name:'Pink',css:'color:#ff8ad8'},{id:'n_sky',name:'Sky',css:'color:#8fdcff'},
