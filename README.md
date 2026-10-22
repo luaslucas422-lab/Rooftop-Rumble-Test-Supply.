@@ -6,4 +6,4 @@ The latest **test version** of Rooftop Rumble. In the game, **Settings → Exper
 - The game server reads `src/manifest.json`, joins the files together and shows the result as the beta.
 - `index.html` is the same thing already joined, so you can open it directly.
 
-Latest upload: 2026-10-22T21:53Z
+Latest upload: 2026-10-22T22:05Z

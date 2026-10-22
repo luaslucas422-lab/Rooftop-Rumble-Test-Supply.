@@ -446,14 +446,22 @@ const EXCLUSIVE_SKINS=[
  {rid:'zapper',stat:'pass',goal:45,how:'Reach Rumble Pass tier 45',skin:{id:'ex_passmaster',name:'Pass Master',tier:'exclusive',body:'#1b2a6b',belly:'#ffd23f',accent:'#ffd23f',proj:'#7ad7ff',eye:'#7ad7ff',hat:'laurel',glow:'#7ad7ff',starry:true}},
  {rid:'echo',stat:'best',goal:3000,how:'Reach 3,000 trophies',skin:{id:'ex_diamond',name:'Diamond',tier:'exclusive',body:'#bfefff',belly:'#ffffff',accent:'#46b4ff',proj:'#9be8ff',eye:'#2a7fd0',hat:'icecrown',glow:'#9be8ff',facets:true,shine:true}}];
 /* Solar: levels bought with chromos after you've done everything else. Each level gives a profile icon and more. */
-const SOLAR_LEVELS=[{name:'Spark',cost:1000},{name:'Glow',cost:2000},{name:'Flare',cost:3500},{name:'Ray',cost:5500},{name:'Beam',cost:8000},
- {name:'Blaze',cost:12000},{name:'Corona',cost:18000},{name:'Nova',cost:27000},{name:'Eclipse',cost:40000},{name:'Solar Fame',cost:200000}];
-const SOLAR_MAX=SOLAR_LEVELS.length,SOL_COL='#ffb000';
+const SOLAR_LEVELS=[{name:'Spark',base:10000},{name:'Glow',base:15000},{name:'Flare',base:22000},{name:'Ray',base:30000},{name:'Beam',base:40000},
+ {name:'Blaze',base:55000},{name:'Corona',base:75000},{name:'Nova',base:100000},{name:'Eclipse',base:140000},{name:'Solar Fame',base:200000}];
+/* every Solar level has 3 steps: I (a pin + an icon), II (gems, coins, power points + an animated pin + an animated icon), III (a skin) */
+const SOLAR_MAX=SOLAR_LEVELS.length,SOLAR_STEPS=SOLAR_MAX*3,SOL_SUB_MUL=[1,1.5,2],SOL_COL='#ffb000',SOL_ROMAN=['I','II','III'];
+const solCost=i=>Math.round(SOLAR_LEVELS[Math.floor(i/3)].base*SOL_SUB_MUL[i%3]);   /* i = 0-based step */
+const solStepName=n=>n<=0?'Not started':SOLAR_LEVELS[Math.ceil(n/3)-1].name+' '+SOL_ROMAN[(n-1)%3];
+const solDone=L=>(S.sol|0)>=L*3;
 const SOLAR_SKINS=[
+ {lv:1,rid:'zing',skin:{id:'sol_spark',name:'Spark',tier:'solar',body:'#fff3a6',belly:'#ffffff',accent:'#ffb000',proj:'#ffe680',eye:'#ff8a1f',hat:'antenna',glow:'#ffe680',sprinkles:true}},
  {lv:2,rid:'spritz',skin:{id:'sol_sunbeam',name:'Sunbeam',tier:'solar',body:'#ffd23f',belly:'#fff6d0',accent:'#ff8a1f',proj:'#ffe680',eye:'#ff8a1f',hat:'halo',glow:'#ffd23f',shine:true}},
+ {lv:3,rid:'fizz',skin:{id:'sol_flarefizz',name:'Flare',tier:'solar',body:'#ff8a1f',belly:'#ffe680',accent:'#ff3b5c',proj:'#ffb000',eye:'#fff3a6',hat:'flame',glow:'#ff8a1f',stripes:true}},
  {lv:4,rid:'blaze',skin:{id:'sol_flare',name:'Solar Flare',tier:'solar',body:'#ff6a00',belly:'#ffd23f',accent:'#fff3a6',proj:'#ffb000',eye:'#fff3a6',hat:'flame',glow:'#ff8a1f',cracks:true}},
+ {lv:5,rid:'bolt',skin:{id:'sol_beam',name:'Sunbeam Sniper',tier:'solar',body:'#fffbe6',belly:'#ffd23f',accent:'#46b4ff',proj:'#7ad7ff',eye:'#46b4ff',hat:'visor',glow:'#7ad7ff',scan:true}},
  {lv:6,rid:'volta',skin:{id:'sol_storm',name:'Sunstorm',tier:'solar',body:'#ffb000',belly:'#fff3a6',accent:'#ff3b5c',proj:'#ffe680',eye:'#ff3b5c',hat:'starcrest',glow:'#ffb000',charged:true}},
- {lv:8,rid:'nova',skin:{id:'sol_corona',name:'Corona',tier:'solar',body:'#fff3a6',belly:'#ffffff',accent:'#ffb000',proj:'#ffd23f',eye:'#ff8a1f',hat:'crown',glow:'#ffe680',rim:'#ffb000',shine:true}},
+ {lv:7,rid:'nova',skin:{id:'sol_corona',name:'Corona',tier:'solar',body:'#fff3a6',belly:'#ffffff',accent:'#ffb000',proj:'#ffd23f',eye:'#ff8a1f',hat:'crown',glow:'#ffe680',rim:'#ffb000',shine:true}},
+ {lv:8,rid:'shade',skin:{id:'sol_supernova',name:'Supernova',tier:'solar',body:'#ff5ad1',belly:'#fff3fb',accent:'#ffd23f',proj:'#ff9ae6',eye:'#ffd23f',hat:'halo',glow:'#ff5ad1',rim:'#ffffff',starry:true}},
  {lv:9,rid:'luna',skin:{id:'sol_eclipse',name:'Eclipse',tier:'solar',body:'#120f26',belly:'#ffb000',accent:'#ffd23f',proj:'#ffd23f',eye:'#ffd23f',hat:'halo',glow:'#ffb000',rim:'#ffd23f',starry:true}},
  {lv:10,rid:'astra',skin:{id:'sol_fame',name:'Solar Fame',tier:'solar',fame:true,body:'#ffd23f',belly:'#fffbe6',accent:'#ff5e87',proj:'#fff3a6',eye:'#ff3b5c',hat:'starcrest',glow:'#ffd23f',rim:'#ffffff',shine:true,starry:true}}];
 const SOL_BY_SKIN={};for(const x of SOLAR_SKINS)SOL_BY_SKIN[x.skin.id]=x;
@@ -615,7 +623,7 @@ const PF_BANNERS=[
  {id:'b_galaxy',name:'Galaxy',css:'radial-gradient(circle at 18% 30%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 72% 62%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 46% 84%,#fffa 0 1px,transparent 2px),radial-gradient(circle at 88% 18%,#fffa 0 1px,transparent 2px),linear-gradient(135deg,#0b0b2e,#3b1f6b 60%,#7a3fb5)',ok:()=>passTier(S.pass.xp|0)>=20,how:'Reach Rumble Pass tier 20'},
  {id:'b_exclusive',name:'Exclusive',css:'linear-gradient(135deg,#053a30,#1a9c80 55%,#7dffd9)',ok:()=>exCount()>=3,how:'Earn 3 exclusive skins'},
  {id:'b_gold',name:'Gold Rush',css:'linear-gradient(135deg,#7a4a00,#ffd23f 50%,#fff3a6)',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
- {id:'b_solar',name:'Solar Flare',css:'radial-gradient(circle at 80% 30%,#fffbe6 0 8%,#ffd23f 12%,#ff8a1f 34%,#c4366f 66%,#3a0a24)',ok:()=>(S.sol|0)>=5,how:'Reach Solar level 5'},
+ {id:'b_solar',name:'Solar Flare',css:'radial-gradient(circle at 80% 30%,#fffbe6 0 8%,#ffd23f 12%,#ff8a1f 34%,#c4366f 66%,#3a0a24)',ok:()=>solDone(5),how:'Finish Solar level 5'},
  {id:'b_rainbow',name:'Rainbow',css:'linear-gradient(135deg,'+RB_LINE+')',ok:isMaster,how:'Reach Master in ranked'}];
 const PF_FRAMES=[
  {id:'f_none',name:'None',css:''},
@@ -628,7 +636,7 @@ const PF_FRAMES=[
  {id:'f_star',name:'Starfall',css:'linear-gradient(135deg,#7ad7ff,#ffffff 45%,#ffd23f)',glow:'#7ad7ff',ok:()=>passTier(S.pass.xp|0)>=30,how:'Reach Rumble Pass tier 30'},
  {id:'f_exclusive',name:'Exclusive',css:'linear-gradient(135deg,#c8fff0,#2de0b0 50%,#0b5a4a)',glow:'#2de0b0',ok:()=>exCount()>=5,how:'Earn 5 exclusive skins'},
  {id:'f_diamond',name:'Diamond',css:'linear-gradient(135deg,#e8fbff,#7ad7ff 30%,#ffffff 55%,#46b4ff)',glow:'#9be8ff',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
- {id:'f_solar',name:'Sunburst',css:'conic-gradient(#ffd23f,#ff8a1f,#fff3a6,#ffb000,#ff5e87,#ffd23f)',glow:'#ffb000',ok:()=>(S.sol|0)>=7,how:'Reach Solar level 7'},
+ {id:'f_solar',name:'Sunburst',css:'conic-gradient(#ffd23f,#ff8a1f,#fff3a6,#ffb000,#ff5e87,#ffd23f)',glow:'#ffb000',ok:()=>solDone(7),how:'Finish Solar level 7'},
  {id:'f_rainbow',name:'Rainbow',css:'conic-gradient('+RB_LINE+',#ff5d57)',glow:'#ff5ad1',ok:isMaster,how:'Reach Master in ranked'}];
 const PF_TITLES=[
  {id:'t_rookie',name:'Rookie'},{id:'t_runner',name:'Rooftop Runner'},{id:'t_friendly',name:'Good Sport'},
@@ -646,7 +654,7 @@ const PF_TITLES=[
  {id:'t_trend',name:'Trendsetter',ok:()=>exCount()>=5,how:'Earn 5 exclusive skins'},
  {id:'t_legend',name:'Legend',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'t_master',name:'Master',ok:isMaster,how:'Reach Master in ranked'},
- {id:'t_spark',name:'Spark',ok:()=>(S.sol|0)>=1,how:'Reach Solar level 1'},{id:'t_sun',name:'Sun Chaser',ok:()=>(S.sol|0)>=3,how:'Reach Solar level 3'},{id:'t_eclipse',name:'Eclipse',ok:()=>(S.sol|0)>=9,how:'Reach Solar level 9'},{id:'t_fame',name:'Solar Fame',ok:()=>(S.sol|0)>=SOLAR_MAX,how:'Reach Solar Fame'}];
+ {id:'t_spark',name:'Spark',ok:()=>solDone(1),how:'Finish Solar level 1'},{id:'t_sun',name:'Sun Chaser',ok:()=>solDone(3),how:'Finish Solar level 3'},{id:'t_eclipse',name:'Eclipse',ok:()=>solDone(9),how:'Finish Solar level 9'},{id:'t_fame',name:'Solar Fame',ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'}];
 const GRAD_TXT=g=>'background:'+g+';-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.55))';
 const PF_NCOLS=[
  {id:'n_white',name:'White',css:'color:#ffffff'},{id:'n_sun',name:'Sunny',css:'color:#ffd23f'},{id:'n_pink',name:'Pink',css:'color:#ff8ad8'},{id:'n_sky',name:'Sky',css:'color:#8fdcff'},
@@ -656,8 +664,8 @@ const PF_NCOLS=[
  {id:'n_ghost',name:'Ghost Green',css:'color:#7dffb0;text-shadow:0 0 10px #2bd46a,0 2px 0 #000',ok:()=>hasSkin('dark','hw_grim'),how:'Get Grim Dark'},
  {id:'n_gold',name:'Gold',css:GRAD_TXT('linear-gradient(180deg,#fff3a6,#ffb000 60%,#c47a00)'),ok:()=>S.best>=2000,how:'Reach 2,000 trophies'},
  {id:'n_rainbow',name:'Rainbow',css:GRAD_TXT('linear-gradient(90deg,'+RB_LINE+')'),ok:()=>isMaster()||hasSkin('dark','hw_surged'),how:'Reach Master or get Surged Dark'},
- {id:'n_solar',name:'Solar',css:GRAD_TXT('linear-gradient(180deg,#fffbe6,#ffd23f 45%,#ff8a1f)'),ok:()=>(S.sol|0)>=6,how:'Reach Solar level 6'},
- {id:'n_fame',name:'Fame',css:GRAD_TXT('linear-gradient(90deg,#ffd23f,#ff8a1f,#ff5e87,#ffd23f)'),ok:()=>(S.sol|0)>=SOLAR_MAX,how:'Reach Solar Fame'}];
+ {id:'n_solar',name:'Solar',css:GRAD_TXT('linear-gradient(180deg,#fffbe6,#ffd23f 45%,#ff8a1f)'),ok:()=>solDone(6),how:'Finish Solar level 6'},
+ {id:'n_fame',name:'Fame',css:GRAD_TXT('linear-gradient(90deg,#ffd23f,#ff8a1f,#ff5e87,#ffd23f)'),ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'}];
 const PF_KINDS={banner:PF_BANNERS,frame:PF_FRAMES,title:PF_TITLES,ncol:PF_NCOLS};
 const PF_DEF={banner:'b_sky',frame:'f_none',title:'t_rookie',ncol:'n_white'};
 const pfItem=(k,id)=>PF_KINDS[k].find(x=>x.id===id)||PF_KINDS[k].find(x=>x.id===PF_DEF[k]);
