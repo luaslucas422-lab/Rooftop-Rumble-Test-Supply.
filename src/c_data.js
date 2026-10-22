@@ -451,7 +451,8 @@ const SOLAR_LEVELS=[{name:'Spark',base:10000},{name:'Glow',base:15000},{name:'Fl
 /* every Solar level has 3 steps: I (a pin + an icon), II (gems, coins, power points + an animated pin + an animated icon), III (a skin) */
 const SOLAR_MAX=SOLAR_LEVELS.length,SOLAR_STEPS=SOLAR_MAX*3,SOL_SUB_MUL=[1,1.5,2],SOL_COL='#ffb000',SOL_ROMAN=['I','II','III'];
 const solCost=i=>Math.round(SOLAR_LEVELS[Math.floor(i/3)].base*SOL_SUB_MUL[i%3]);   /* i = 0-based step */
-const solStepName=n=>n<=0?'Not started':SOLAR_LEVELS[Math.ceil(n/3)-1].name+' '+SOL_ROMAN[(n-1)%3];
+const SOLDAR_STEP=SOLAR_STEPS+1,SOLDAR_COST=500000,SOLDAR_CASH={gems:2000,coins:100000,pp:50000};
+const solStepName=n=>n<=0?'Not started':n>SOLAR_STEPS?'Soldar':SOLAR_LEVELS[Math.ceil(n/3)-1].name+' '+SOL_ROMAN[(n-1)%3];
 const solDone=L=>(S.sol|0)>=L*3;
 const SOLAR_SKINS=[
  {lv:1,rid:'zing',skin:{id:'sol_spark',name:'Spark',tier:'solar',body:'#fff3a6',belly:'#ffffff',accent:'#ffb000',proj:'#ffe680',eye:'#ff8a1f',hat:'antenna',glow:'#ffe680',sprinkles:true}},
@@ -464,7 +465,11 @@ const SOLAR_SKINS=[
  {lv:8,rid:'shade',skin:{id:'sol_supernova',name:'Supernova',tier:'solar',body:'#ff5ad1',belly:'#fff3fb',accent:'#ffd23f',proj:'#ff9ae6',eye:'#ffd23f',hat:'halo',glow:'#ff5ad1',rim:'#ffffff',starry:true}},
  {lv:9,rid:'luna',skin:{id:'sol_eclipse',name:'Eclipse',tier:'solar',body:'#120f26',belly:'#ffb000',accent:'#ffd23f',proj:'#ffd23f',eye:'#ffd23f',hat:'halo',glow:'#ffb000',rim:'#ffd23f',starry:true}},
  {lv:10,rid:'astra',skin:{id:'sol_fame',name:'Solar Fame',tier:'solar',fame:true,body:'#ffd23f',belly:'#fffbe6',accent:'#ff5e87',proj:'#fff3a6',eye:'#ff3b5c',hat:'starcrest',glow:'#ffd23f',rim:'#ffffff',shine:true,starry:true}}];
-const SOL_BY_SKIN={};for(const x of SOLAR_SKINS)SOL_BY_SKIN[x.skin.id]=x;
+/* Soldar: the final level after Solar Fame. No steps, just one huge unlock. */
+const SOLDAR_SKINS=[
+ {lv:11,rid:'orion',skin:{id:'sdr_orion',name:'Soldar',tier:'solar',fame:true,soldar:true,body:'#120f26',belly:'#ffd23f',accent:'#ff3b5c',proj:'#ffb000',eye:'#ffd23f',hat:'crown',glow:'#ff6a00',rim:'#ffd23f',starry:true,shine:true}},
+ {lv:11,rid:'zenith',skin:{id:'sdr_meteor',name:'Soldar',tier:'solar',fame:true,soldar:true,body:'#2a0a12',belly:'#ffb000',accent:'#ffd23f',proj:'#ff6a00',eye:'#fff3a6',hat:'spikes',glow:'#ff3b5c',rim:'#ffb000',cracks:true}}];
+const SOL_BY_SKIN={};for(const x of SOLAR_SKINS.concat(SOLDAR_SKINS))SOL_BY_SKIN[x.skin.id]=x;
 const EX_BY_SKIN={};for(const e of EXCLUSIVE_SKINS)EX_BY_SKIN[e.skin.id]=e;
 function skinsOf(b){
   if(b._skins)return b._skins;
@@ -482,7 +487,7 @@ function skinsOf(b){
   list.push({...base,...POWER_SKIN,boxy:!!b.boxy});
   if(b.id==='juggler')list.push({...base,...MAID_SKIN,boxy:!!b.boxy});
   for(const e of EXCLUSIVE_SKINS)if(e.rid===b.id)list.push({...base,...e.skin,boxy:!!b.boxy});
-  for(const x of SOLAR_SKINS)if(x.rid===b.id)list.push({...base,...x.skin,boxy:!!b.boxy});
+  for(const x of SOLAR_SKINS.concat(SOLDAR_SKINS))if(x.rid===b.id)list.push({...base,...x.skin,boxy:!!b.boxy});
   list.push({...base,...b.sig,id:'sig',tier:'sig'});
   return(b._skins=list);
 }
@@ -654,7 +659,7 @@ const PF_TITLES=[
  {id:'t_trend',name:'Trendsetter',ok:()=>exCount()>=5,how:'Earn 5 exclusive skins'},
  {id:'t_legend',name:'Legend',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'t_master',name:'Master',ok:isMaster,how:'Reach Master in ranked'},
- {id:'t_spark',name:'Spark',ok:()=>solDone(1),how:'Finish Solar level 1'},{id:'t_sun',name:'Sun Chaser',ok:()=>solDone(3),how:'Finish Solar level 3'},{id:'t_eclipse',name:'Eclipse',ok:()=>solDone(9),how:'Finish Solar level 9'},{id:'t_fame',name:'Solar Fame',ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'}];
+ {id:'t_spark',name:'Spark',ok:()=>solDone(1),how:'Finish Solar level 1'},{id:'t_sun',name:'Sun Chaser',ok:()=>solDone(3),how:'Finish Solar level 3'},{id:'t_eclipse',name:'Eclipse',ok:()=>solDone(9),how:'Finish Solar level 9'},{id:'t_fame',name:'Solar Fame',ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'},{id:'t_soldar',name:'Soldar',ok:()=>(S.sol|0)>SOLAR_STEPS,how:'Reach Soldar'}];
 const GRAD_TXT=g=>'background:'+g+';-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.55))';
 const PF_NCOLS=[
  {id:'n_white',name:'White',css:'color:#ffffff'},{id:'n_sun',name:'Sunny',css:'color:#ffd23f'},{id:'n_pink',name:'Pink',css:'color:#ff8ad8'},{id:'n_sky',name:'Sky',css:'color:#8fdcff'},
@@ -665,7 +670,8 @@ const PF_NCOLS=[
  {id:'n_gold',name:'Gold',css:GRAD_TXT('linear-gradient(180deg,#fff3a6,#ffb000 60%,#c47a00)'),ok:()=>S.best>=2000,how:'Reach 2,000 trophies'},
  {id:'n_rainbow',name:'Rainbow',css:GRAD_TXT('linear-gradient(90deg,'+RB_LINE+')'),ok:()=>isMaster()||hasSkin('dark','hw_surged'),how:'Reach Master or get Surged Dark'},
  {id:'n_solar',name:'Solar',css:GRAD_TXT('linear-gradient(180deg,#fffbe6,#ffd23f 45%,#ff8a1f)'),ok:()=>solDone(6),how:'Finish Solar level 6'},
- {id:'n_fame',name:'Fame',css:GRAD_TXT('linear-gradient(90deg,#ffd23f,#ff8a1f,#ff5e87,#ffd23f)'),ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'}];
+ {id:'n_fame',name:'Fame',css:GRAD_TXT('linear-gradient(90deg,#ffd23f,#ff8a1f,#ff5e87,#ffd23f)'),ok:()=>solDone(SOLAR_MAX),how:'Finish Solar Fame'},
+ {id:'n_soldar',name:'Soldar',css:'background:linear-gradient(90deg,#ffd23f,#ff6a00,#ff3b5c,#2a0a12,#ffd23f);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6));animation:soldarName 3s linear infinite',ok:()=>(S.sol|0)>SOLAR_STEPS,how:'Reach Soldar'}];
 const PF_KINDS={banner:PF_BANNERS,frame:PF_FRAMES,title:PF_TITLES,ncol:PF_NCOLS};
 const PF_DEF={banner:'b_sky',frame:'f_none',title:'t_rookie',ncol:'n_white'};
 const pfItem=(k,id)=>PF_KINDS[k].find(x=>x.id===id)||PF_KINDS[k].find(x=>x.id===PF_DEF[k]);

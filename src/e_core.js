@@ -193,7 +193,7 @@ function ownedIcons(){const out=[];for(const id in S.owned)out.push('r:'+id);for
   for(const id in S.owned)for(const sid of S.owned[id].skins){const sk=skinsOf(BY_ID[id]).find(k=>k.id===sid);if(sk&&(ICON_SKIN_TIERS.includes(sk.tier)||sk.ultraFx))out.push('s:'+id+':'+sid);}
   S.rankTop=Math.max(S.rankTop|0,rankInfo(S.rp|0).tier,rankInfo(S.rankPeak|0).tier);for(let t=0;t<=Math.min(7,S.rankTop);t++)out.push('k:'+t);
   for(const p of SECRET_PINS)if(S.pins.includes(p[0]))out.push('z:'+p[0]);
-  for(const x of S.icons||[])out.push('x:'+x);for(let l=1;l<=SOLAR_MAX;l++){if((S.sol|0)>=l*3-2)out.push('o:'+l);if((S.sol|0)>=l*3-1)out.push('o:'+l+'a');}return out;}
+  for(const x of S.icons||[])out.push('x:'+x);for(let l=1;l<=SOLAR_MAX;l++){if((S.sol|0)>=l*3-2)out.push('o:'+l);if((S.sol|0)>=l*3-1)out.push('o:'+l+'a');}if((S.sol|0)>SOLAR_STEPS)out.push('o:11','o:11a');return out;}
 function playerCode(){const pid=myPid();let h=2166136261;for(const ch of pid)h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0;const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<6;i++){o+=A[h%A.length];h=((Math.floor(h/A.length)^Math.imul(h,2654435761))>>>0);}return o;}
 function grantRumbler(id){
   if(S.owned[id])return false;S.owned[id]=newRumbler();if(S.masterAll&&!S.owned[id].skins.includes('master'))S.owned[id].skins.push('master');const keep=[];
