@@ -99,6 +99,10 @@ function renderTiles(){
     b.innerHTML='<span class="tico">'+GIFT_SVG+'</span><span style="min-width:0"><span class="tk">Free daily gift</span><b>'+g[k]+' '+CUR_NAME[k]+' waiting</b><span class="tt">Tap to claim it in the shop</span></span>';}
   {const tier=passTier(S.pass.xp),done=tier>=PASS_TIERS,into=done?(S.pass.xp-PASS_TIERS*PASS_STEP)%PASS_BONUS_STEP:S.pass.xp%PASS_STEP,ready=passClaimable(),b=mk('wide'+(ready?' passr':''),'#ffd36b',()=>go('pass'));
     b.innerHTML='<span class="tico">'+passBadge(tier,46)+'</span><span style="min-width:0"><span class="tk">Rumble Pass · Starfall</span><b>'+(ready?ready+' reward'+(ready>1?'s':'')+' to claim':done?'Pass complete':'Tier '+tier+' of '+PASS_TIERS)+'</b><span class="tbar"><i style="width:'+Math.round(into/PASS_STEP*100)+'%;background:#ffd36b"></i></span></span>';}
+  /* Banks: above Next unlock and Ranked */
+  {const parts=bankSummary(),b=mk('wide banktile','#46b4ff',()=>openBanks());const ic=document.createElement('span');ic.className='tico bank-ico';ic.textContent='\ud83c\udfe6';b.append(ic);
+    const tx=document.createElement('span');tx.style.minWidth='0';tx.innerHTML='<span class="tk">Banks</span><b>'+(parts.length?esc(parts.slice(0,2).join(' \u00b7 '))+(parts.length>2?' +'+(parts.length-2)+' more':''):'Save your chromos, coins & more')+'</b>';
+    const ks=document.createElement('span');ks.className='bank-keepers';for(const bk of BANKS){const t=thumb(BY_ID[bk.rid],bankKeeperSkin(bk),26);ks.append(t);}tx.append(ks);b.append(tx);}
   const locked=RUMBLERS.filter(x=>!S.owned[x.id]&&!RARITY[x.rarity].passOnly&&!eventLocked(x)).sort((a,b)=>RARITY[a.rarity].chromos-RARITY[b.rarity].chromos);
   if(locked.length){const nb=locked[0],need=RARITY[nb.rarity].chromos,f=clamp(S.chromos/need,0,1),b=mk('',RARITY[nb.rarity].col,()=>openRumbler(nb.id));
     const cv=thumb(nb,getSkin(nb,'classic'),48);cv.classList.add('lockd');b.append(cv);
