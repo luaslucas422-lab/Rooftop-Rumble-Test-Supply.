@@ -73,7 +73,7 @@ function openSandbox(){openSheet(card=>{card.classList.add('sbx');
     sel.addEventListener('change',()=>{const i=+sel.value;S.rp=i*100;S.rankPeak=Math.max(S.rankPeak|0,i);S.rankTop=Math.max(S.rankTop|0,rankInfo(i*100).tier);persist();renderHome();sfx('tap');});rk.append(sel);s.append(rk);
     s.append(sbxPills('Rumble Pass',[[true,'Premium'],[false,'Free only']],()=>!!S.pass.premium,v=>{S.pass.premium=v;if(!v)S.pass.super=false;persist();}));
     s.append(sbxPills('Rumble Pass SUPER',[[true,'On'],[false,'Off']],()=>!!S.pass.super,v=>{S.pass.super=v;if(v)S.pass.premium=true;else S.pass.superPick=null;persist();renderHome();}));
-    s.append(sbxBtn('Reset pass claims','',()=>{S.pass.cf=[];S.pass.cp=[];S.pass.cs=[];S.pass.superPick=null;persist();sfx('tap');toast('Pass rewards can be claimed again');}));}
+    s.append(sbxBtn('Reset pass claims','',()=>{S.pass.cf=[];S.pass.cp=[];S.pass.cs=[];S.pass.superPick=null;S.pass.boost=false;persist();sfx('tap');toast('Pass rewards can be claimed again');}));}
   {const s=sbxSec(card,'Give drops & boxes','#9d7bff');let n=1;s.append(sbxPills('How many',[[1,'×1'],[5,'×5'],[10,'×10'],[25,'×25']],()=>n,v=>n=v));
     const g=document.createElement('div');g.className='sbx-drops';
     for(const r of DROP_RAR.concat(['season'],SPOOKY,BOXES)){if(!RARITY[r])continue;const b=document.createElement('button');b.className='sbx-drop';b.append(dropCanvas(r,46));b.insertAdjacentHTML('beforeend','<small>'+esc(dropName(r))+'</small>');

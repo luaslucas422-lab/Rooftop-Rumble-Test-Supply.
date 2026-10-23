@@ -32,6 +32,10 @@ function passEmblem(size,o){o=o||{};const sup=o.super!=null?!!o.super:hasSuper()
 function passEmblemEl(size,o){const sp=document.createElement('span');sp.className='rpe-wrap'+(o&&o.cls?' '+o.cls:'');sp.innerHTML=passEmblem(size,o);return sp;}
 try{Object.defineProperty(ICON,'rpass',{get:()=>passEmblem(22),enumerable:false});}catch(e){}
 const PASS_SUPER_GEMS=300,PASS_SUPER_UP=150,SUPER_CHROMOS=11000;
+/* +25% instant progress the first time you get the Rumble Pass or SUPER (once per season, they don't stack) */
+const PASS_BOOST=Math.round(PASS_TIERS*PASS_STEP*.25),PASS_BOOST_TIERS=Math.floor(PASS_BOOST/PASS_STEP);
+function passBoost(){if(S.pass.boost)return 0;S.pass.xp+=PASS_BOOST;S.pass.boost=true;return PASS_BOOST;}
+function passBoostToast(n){if(n)setTimeout(()=>toast('+25% instant progress! +'+fmtFull(n)+' pass tokens','pass'),700);}
 function superPrice(){return S.pass.premium?PASS_SUPER_UP:PASS_SUPER_GEMS;}
 function superMythics(){return RUMBLERS.filter(b=>b.rarity==='mythic'&&!b.eventOnly&&!b.beta);}
 function superPickPending(){return hasSuper()&&(S.pass.cs||[]).includes(SUPER_MYTHIC_TIER)&&!S.pass.superPick;}
@@ -58,7 +62,7 @@ function superTab(){try{const t=document.querySelector('.tab[data-tab="pass"]');
 function superRefresh(){try{renderHome();}catch(e){}try{renderPass();}catch(e){}try{renderShop();}catch(e){}try{updateShopDot();}catch(e){}}
 function buySuper(){const up=!!S.pass.premium,price=superPrice();
   confirmBuy(up?'Upgrade to Rumble Pass SUPER':'Rumble Pass SUPER',passEmblemEl(110,{cls:'rpe-buy',super:true}),[['gems',price]],()=>{
-    S.pass.premium=true;S.pass.super=true;persist();sfx('unlock');try{if(typeof netHello==='function')netHello();}catch(e){}superRefresh();superReveal();});}
+    const bn=passBoost();S.pass.premium=true;S.pass.super=true;persist();sfx('unlock');try{if(typeof netHello==='function')netHello();}catch(e){}superRefresh();superReveal(bn);});}
 function superBannerSwatch(cls){const d=document.createElement('span');d.className=cls||'sup-ban';const bn=PF_BANNERS.find(x=>x.id==='b_super');if(bn)d.style.background=bn.css;return d;}
 function superTitleChip(){const t=document.createElement('span');t.className='sup-title';t.textContent='Super Rumbler';return t;}
 function superMythicStack(n){const w=document.createElement('span');w.className='sup-mys';const left=superMythics().filter(b=>!S.owned[b.id]),list=(left.length?left:superMythics()).slice(0,n||3);for(const b of list)w.append(thumb(b,getSkin(b,'classic'),40));return w;}
@@ -73,19 +77,20 @@ function superCard(){const c=document.createElement('div');c.className='sup-card
   li(superTitleChip(),'Super Rumbler title','Only SUPER owners have it');
   li(superBannerSwatch(),'Super Pass banner','A profile background for your card');
   li(iconCanvas('x:super',44),'SUPER profile icon','Plus the crowned SUPER pass emblem');
+  if(!S.pass.boost){const v=document.createElement('span');v.className='boost-badge';v.textContent='+25%';li(v,'+25% instant progress','Jump about '+PASS_BOOST_TIERS+' tiers ahead the moment you get it');}
   if(!up)li(passEmblemEl(40,{super:false}),'The whole Rumble Pass','All '+PASS_TIERS+' premium rewards, Starfall skins and Orion');
   c.append(ul);
   const b=document.createElement('button');b.className='btn super-btn';b.innerHTML='<span class="rpe-btn">'+passEmblem(26,{super:true})+'</span>'+(up?'Upgrade to SUPER · ':'Get Rumble Pass SUPER · ')+cost('gems',superPrice());b.addEventListener('click',()=>{sfx('click');buySuper();});c.append(b);
   c.insertAdjacentHTML('beforeend','<p class="hint sup-note">'+(up?'Half price because you already have the Rumble Pass (normally '+PASS_SUPER_GEMS+' gems).':'Already have the Rumble Pass? Then SUPER is only '+PASS_SUPER_UP+' gems.')+'</p>');
   return c;}
 /* "SUPER unlocked!" */
-function superReveal(){const auto=superGrantChromosIfDone();if(auto)superRefresh();
+function superReveal(bnShown){const auto=superGrantChromosIfDone();if(auto)superRefresh();
   openSheet(card=>{card.classList.add('rid','sup-sheet');
     card.insertAdjacentHTML('beforeend','<p class="of-kick sup-kick" style="text-align:center">Rumble Pass SUPER</p><h2 style="text-align:center">SUPER unlocked!</h2>');
     const w=document.createElement('div');w.className='ex-burst';w.append(passEmblemEl(140,{super:true,cls:'rpe-buy'}));card.append(w);
     const rw=document.createElement('div');rw.className='sol-rlist';
     const add=(vis,lab)=>{const d=document.createElement('div');d.append(vis);d.insertAdjacentHTML('beforeend','<span>'+lab+'</span>');rw.append(d);};
-    {const v=document.createElement('span');v.className='sup-mys';for(const d of['rbox','ultra'])v.append(dropCanvas(d,32));add(v,PASS_TIERS+' SUPER rewards, with a Mythic of your choice at tier '+(SUPER_MYTHIC_TIER+1));}add(superTitleChip(),'Super Rumbler title');add(superBannerSwatch('sup-ban sm'),'Super Pass banner');add(iconCanvas('x:super',40),'SUPER profile icon');add(passEmblemEl(40,{super:false}),'Every Rumble Pass reward');
+    {const v=document.createElement('span');v.className='sup-mys';for(const d of['rbox','ultra'])v.append(dropCanvas(d,32));add(v,PASS_TIERS+' SUPER rewards, with a Mythic of your choice at tier '+(SUPER_MYTHIC_TIER+1));}add(superTitleChip(),'Super Rumbler title');add(superBannerSwatch('sup-ban sm'),'Super Pass banner');add(iconCanvas('x:super',40),'SUPER profile icon');add(passEmblemEl(40,{super:false}),'Every Rumble Pass reward');if(bnShown){const v=document.createElement('span');v.className='boost-badge';v.textContent='+25%';add(v,'+25% instant pass progress');}
     if(auto){const sp=document.createElement('span');sp.className='sup-cico';sp.innerHTML=ICON.chromos;add(sp,'+'+fmtFull(SUPER_CHROMOS)+' chromos (you have every Mythic)');}
     card.append(rw);
     if(superPickPending()){const p=document.createElement('button');p.className='btn gold sup-pick-btn';p.textContent='Choose your free Mythic';p.addEventListener('click',openSuperPick);card.append(p);}
