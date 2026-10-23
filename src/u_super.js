@@ -34,7 +34,24 @@ try{Object.defineProperty(ICON,'rpass',{get:()=>passEmblem(22),enumerable:false}
 const PASS_SUPER_GEMS=300,PASS_SUPER_UP=150,SUPER_CHROMOS=11000;
 function superPrice(){return S.pass.premium?PASS_SUPER_UP:PASS_SUPER_GEMS;}
 function superMythics(){return RUMBLERS.filter(b=>b.rarity==='mythic'&&!b.eventOnly&&!b.beta);}
-function superPickPending(){return hasSuper()&&!S.pass.superPick;}
+function superPickPending(){return hasSuper()&&(S.pass.cs||[]).includes(SUPER_MYTHIC_TIER)&&!S.pass.superPick;}
+/* claim one SUPER reward (they sit underneath the Rumble Pass rewards) */
+function claimSuper(i,quiet){S.pass.cs=S.pass.cs||[];if(!hasSuper()||i>=passTier(S.pass.xp)||S.pass.cs.includes(i))return false;
+  const rw=PASS_SUPER[i];S.pass.cs.push(i);giveReward(rw);
+  if(!quiet){persist();sfx('unlock');
+    if(rw.mythic){if(superGrantChromosIfDone()){toast('+'+fmtFull(SUPER_CHROMOS)+' chromos · you have every Mythic','chromos');}else if(superPickPending()){renderPass();updateShopDot();openSuperPick();return true;}else toast('You already picked your Mythic','pass');}
+    else toast(rewardLabel(rw)+(rwKey(rw)==='drop'?' · open from the home screen':''),'rpass');
+    renderPass();updateShopDot();}
+  return true;}
+function superMythicVisual(size){const w=document.createElement('span');w.className='sup-myst';w.style.width=w.style.height=size+'px';w.style.fontSize=Math.round(size*.5)+'px';
+  const pick=S.pass.superPick&&BY_ID[S.pass.superPick],b=pick||superMythics().find(x=>!S.owned[x.id])||BY_ID.vex,t=thumb(b,getSkin(b,'classic'),size);if(!pick)t.classList.add('myst');w.append(t);if(!pick)w.insertAdjacentHTML('beforeend','<i>?</i>');return w;}
+function superCell(i,tier){const rw=PASS_SUPER[i],got=(S.pass.cs||[]).includes(i),own=hasSuper(),lock=i>=tier,ok=own&&!got&&!lock,my=!!rw.mythic;
+  const b=document.createElement('button');b.className='pcell scell'+(my?' smyth':'')+(got?' got':ok?' ready':' lock')+(own?'':' snot');
+  b.append(rewardVisual(rw,my?46:32));const tx=document.createElement('span');tx.className='sl';tx.innerHTML=(my?'<span class="sk">Middle of the pass</span>':'')+'<span class="pl">'+esc(rewardLabel(rw))+'</span>'+(ok?'<span class="ctag">Claim</span>':'');b.append(tx);
+  if(got)b.insertAdjacentHTML('beforeend','<span class="chk">✓</span>');else if(!own)b.insertAdjacentHTML('beforeend','<span class="slk">'+passEmblem(18,{super:true})+'</span>');
+  b.setAttribute('aria-label','Tier '+(i+1)+' SUPER reward: '+rewardLabel(rw)+(got?', claimed':ok?', ready to claim':', locked'));
+  b.addEventListener('click',()=>{if(ok)claimSuper(i);else if(got){if(my&&superPickPending())openSuperPick();}else if(!own){toast('Get Rumble Pass SUPER to claim this','rpass');const c=document.querySelector('.sup-card');if(c&&c.scrollIntoView)c.scrollIntoView({behavior:'smooth',block:'start'});}else toast('Reach tier '+(i+1)+' to claim this','pass');});
+  return b;}
 /* if you already have every Mythic, SUPER gives 11,000 chromos instead */
 function superGrantChromosIfDone(){if(!superPickPending())return false;if(superMythics().some(b=>!S.owned[b.id]))return false;S.chromos+=SUPER_CHROMOS;S.pass.superPick='chromos';persist();return true;}
 function superTab(){try{const t=document.querySelector('.tab[data-tab="pass"]');if(t&&t.classList)t.classList.toggle('super',hasSuper());}catch(e){}}
@@ -51,7 +68,8 @@ function superCard(){const c=document.createElement('div');c.className='sup-card
   hd.insertAdjacentHTML('beforeend','<div style="min-width:0"><p class="of-kick sup-kick">Version 2 of the Rumble Pass</p><h2>Rumble Pass SUPER</h2><p class="hint">Everything in the Rumble Pass, plus:</p></div>');c.append(hd);
   const ul=document.createElement('ul');ul.className='sup-perks';
   const li=(vis,b,sm)=>{const l=document.createElement('li');const pv=document.createElement('span');pv.className='pv';pv.append(vis);l.append(pv);l.insertAdjacentHTML('beforeend','<span style="min-width:0"><b>'+b+'</b>'+(sm?'<small>'+sm+'</small>':'')+'</span>');ul.append(l);};
-  li(superMythicStack(3),'A free Mythic of your choice',left?'Pick any of the '+left+' Mythic'+(left>1?'s':'')+' you don’t have yet':'You have every Mythic, so you get '+fmtFull(SUPER_CHROMOS)+' chromos instead');
+  {const v=document.createElement('span');v.className='sup-mys';for(const d of['rbox','ultra','legendary'])v.append(dropCanvas(d,38));li(v,PASS_TIERS+' extra SUPER rewards','A bigger reward under every Rumble Pass reward: gems, boxes, Ultra Drops and lots of chromos');}
+  li(superMythicVisual(44),'A Mythic of your choice','In the middle of the pass at tier '+(SUPER_MYTHIC_TIER+1)+(left?'. Pick any Mythic you don’t have yet':'. You have every Mythic, so you get '+fmtFull(SUPER_CHROMOS)+' chromos instead'));
   li(superTitleChip(),'Super Rumbler title','Only SUPER owners have it');
   li(superBannerSwatch(),'Super Pass banner','A profile background for your card');
   li(iconCanvas('x:super',44),'SUPER profile icon','Plus the crowned SUPER pass emblem');
@@ -67,7 +85,7 @@ function superReveal(){const auto=superGrantChromosIfDone();if(auto)superRefresh
     const w=document.createElement('div');w.className='ex-burst';w.append(passEmblemEl(140,{super:true,cls:'rpe-buy'}));card.append(w);
     const rw=document.createElement('div');rw.className='sol-rlist';
     const add=(vis,lab)=>{const d=document.createElement('div');d.append(vis);d.insertAdjacentHTML('beforeend','<span>'+lab+'</span>');rw.append(d);};
-    add(superTitleChip(),'Super Rumbler title');add(superBannerSwatch('sup-ban sm'),'Super Pass banner');add(iconCanvas('x:super',40),'SUPER profile icon');add(passEmblemEl(40,{super:false}),'Every Rumble Pass reward');
+    {const v=document.createElement('span');v.className='sup-mys';for(const d of['rbox','ultra'])v.append(dropCanvas(d,32));add(v,PASS_TIERS+' SUPER rewards, with a Mythic of your choice at tier '+(SUPER_MYTHIC_TIER+1));}add(superTitleChip(),'Super Rumbler title');add(superBannerSwatch('sup-ban sm'),'Super Pass banner');add(iconCanvas('x:super',40),'SUPER profile icon');add(passEmblemEl(40,{super:false}),'Every Rumble Pass reward');
     if(auto){const sp=document.createElement('span');sp.className='sup-cico';sp.innerHTML=ICON.chromos;add(sp,'+'+fmtFull(SUPER_CHROMOS)+' chromos (you have every Mythic)');}
     card.append(rw);
     if(superPickPending()){const p=document.createElement('button');p.className='btn gold sup-pick-btn';p.textContent='Choose your free Mythic';p.addEventListener('click',openSuperPick);card.append(p);}

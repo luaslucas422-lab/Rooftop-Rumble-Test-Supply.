@@ -612,6 +612,13 @@ const PASS_PREM=[{skin:'ember'},{gems:10},{drop:'season'},{coins:300},{pin:'come
  {pp:250},{skin:'woodrow'},{chromos:1000},{drop:'mythic'},{drop:'rbox'},{coins:600},{drop:'legendary'},{skin:'zenith'},{drop:'ultra'},{drop:'season',n:2},
  {drop:'rbox'},{gems:30},{pin:'nebula'},{chromos:1200},{drop:'sbox'},{coins:700},{drop:'legendary'},{pin:'meteorshower'},{drop:'season',n:2},{drop:'rbox'},
  {gems:40},{drop:'ultra'},{pin:'supernova'},{drop:'season',n:3},{rumbler:'orion'}];
+/* Rumble Pass SUPER: one extra, bigger reward under every Rumble Pass reward. Tier 23 (the middle) is a Mythic of your choice. */
+const PASS_SUPER=[{gems:10},{coins:500},{drop:'epic',n:2},{chromos:800},{pp:300},{drop:'rbox'},{gems:15},{coins:700},{drop:'legendary'},{chromos:1000},
+ {pp:400},{drop:'sbox'},{gems:20},{coins:900},{drop:'season',n:3},{chromos:1200},{drop:'legendary',n:2},{pp:500},{drop:'rbox',n:2},{gems:25},
+ {coins:1000},{drop:'ultra'},{mythic:1},{chromos:1500},{pp:600},{drop:'sbox',n:2},{gems:30},{coins:1200},{drop:'legendary',n:2},{chromos:1800},
+ {drop:'rbox',n:2},{pp:700},{gems:40},{drop:'ultra'},{coins:1500},{chromos:2000},{drop:'season',n:4},{pp:800},{drop:'sbox',n:2},{gems:60},
+ {drop:'ultra',n:2},{coins:2000},{chromos:2500},{drop:'rbox',n:3},{drop:'ultra',n:3}];
+const SUPER_MYTHIC_TIER=PASS_SUPER.findIndex(r=>r.mythic);
 const passTier=xp=>Math.min(PASS_TIERS,Math.floor(xp/PASS_STEP));
 const bonusAvail=xp=>Math.max(0,Math.floor((xp-PASS_TIERS*PASS_STEP)/PASS_BONUS_STEP));
 
