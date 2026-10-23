@@ -775,6 +775,59 @@ body.rot-game #game{position:fixed;inset:auto;left:0;top:0;transform:rotate(90de
 .cr-thead{background:linear-gradient(90deg,#c8fff0,#2de0b0,#9d7bff);-webkit-background-clip:text;background-clip:text;color:transparent!important}
 .cr-tnames{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0 4px;max-width:100%}.cr-tname{padding:5px 12px;border-radius:999px;background:rgba(45,224,176,.16);border:2px solid rgba(45,224,176,.55);font-weight:900;font-size:14px}.cr-tname.me{background:linear-gradient(90deg,#2de0b0,#9d7bff);color:#120f26;border-color:#c8fff0}
 .cr-tload,.cr-toff{color:var(--muted);font-weight:700;font-size:13px;width:100%}
+
+/* ================= Beta UI refresh (beta build only: body.beta-ui) ================= */
+body.beta-ui:not(.hw-theme) #app{background:radial-gradient(90% 40% at 0% 0%,rgba(124,92,255,.42),transparent 62%),radial-gradient(80% 40% at 100% 18%,rgba(45,212,191,.16),transparent 60%),radial-gradient(120% 45% at 50% 112%,rgba(255,94,135,.34),rgba(255,94,135,0) 62%),var(--sky)}
+body.beta-ui .screen:not(.game){padding-bottom:calc(var(--tabh) + 36px)}
+body.beta-ui .col{gap:12px}
+/* header: one glass bar with you on top and your money in a neat row underneath */
+body.beta-ui #home .top{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:8px;background:linear-gradient(180deg,rgba(66,58,150,.62),rgba(26,21,68,.62));border:2px solid rgba(13,10,34,.95);border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 20px rgba(0,0,0,.32)}
+body.beta-ui #home .me{padding-right:52px;min-height:44px}
+body.beta-ui .hamb{top:21px;right:calc(max(16px,env(safe-area-inset-right,0px)) + 10px);width:40px;height:40px;border-width:2px;border-radius:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 3px 0 var(--edge)}
+body.beta-ui #wallet{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:3px;background:rgba(8,6,26,.55);border:2px solid rgba(13,10,34,.95);border-radius:15px;box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
+body.beta-ui #wallet .pill{justify-content:center;gap:4px;padding:3px 2px;background:none;border:0;border-radius:0;box-shadow:none;font-size:13px}
+body.beta-ui #wallet .pill+.pill{border-left:1px solid rgba(255,255,255,.1)}
+body.beta-ui #wallet .pill svg{width:20px;height:20px}
+body.beta-ui .mode-tag{background:linear-gradient(90deg,#9d7bff,#2dd4bf)!important;color:#120f26;box-shadow:0 0 12px rgba(157,123,255,.55)}
+/* the Halloween moon: smaller and softer so it stops covering things */
+body.beta-ui .hwmoon{width:54px;height:54px;top:17%;right:6%;opacity:.45;box-shadow:0 0 30px 8px rgba(255,240,190,.2),0 0 70px 24px rgba(255,160,60,.1)}
+/* cards and panels: softer edges, glassy shine, real shadows */
+body.beta-ui .stage{border-width:2px;border-radius:26px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 24px rgba(0,0,0,.35)}
+body.beta-ui .road,body.beta-ui .modebtn{border-width:2px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 6px 14px rgba(0,0,0,.28)}
+body.beta-ui .panel{border-width:2px;border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 18px rgba(0,0,0,.3)}
+body.beta-ui .card{border-width:2px;border-radius:20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 16px rgba(0,0,0,.3)}
+body.beta-ui .card::after{border-radius:18px}
+body.beta-ui .head h1{background:linear-gradient(180deg,#fff 30%,#cbbcff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 3px 0 var(--edge))}
+/* home tiles */
+body.beta-ui .tiles{gap:12px}
+body.beta-ui .tile{border:2px solid rgba(13,10,34,.95);border-radius:20px;padding:12px 12px 12px 14px;background:radial-gradient(120% 110% at 100% 0%,color-mix(in srgb,var(--tc,#46b4ff) 34%,transparent),transparent 58%),linear-gradient(165deg,#352e7e,#1f1a4e 78%);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 0 1px color-mix(in srgb,var(--tc,#46b4ff) 24%,transparent),0 8px 18px rgba(0,0,0,.32);transition:transform .12s}
+body.beta-ui .tile:active{transform:scale(.97)}
+body.beta-ui .tile.wide{grid-template-columns:auto minmax(0,1fr) auto}
+body.beta-ui .tile.wide::after{content:"\203A";font:400 26px/1 var(--display);color:rgba(255,255,255,.5);padding-left:2px}
+body.beta-ui .tile .tk{color:color-mix(in srgb,var(--tc,#46b4ff) 45%,#fff)}
+body.beta-ui .tile .tbar{height:8px;border-radius:5px;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+body.beta-ui .tile .tbar i{border-radius:5px;box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+/* small tiles sit in pairs: icon + label on top, name and progress underneath */
+body.beta-ui .tile.bt-mini{grid-template-columns:auto minmax(0,1fr);column-gap:8px;row-gap:4px;align-items:center;align-content:start;padding:12px}
+body.beta-ui .tile.bt-mini>span:not(.tico){display:contents}
+body.beta-ui .tile.bt-mini>canvas,body.beta-ui .tile.bt-mini>.tico{grid-row:1;grid-column:1;width:40px!important;height:40px!important;display:grid;place-items:center}
+body.beta-ui .tile.bt-mini .tico svg{width:40px;height:40px}
+body.beta-ui .tile.bt-mini .bank-ico{font-size:30px;line-height:40px}
+body.beta-ui .tile.bt-mini .tk{grid-row:1;grid-column:2;line-height:1.2;min-width:0}
+body.beta-ui .tile.bt-mini b,body.beta-ui .tile.bt-mini .tbar,body.beta-ui .tile.bt-mini .tt,body.beta-ui .tile.bt-mini .bank-keepers{grid-column:1/-1;min-width:0}
+body.beta-ui .tile.bt-mini b{white-space:normal;font-size:15px;line-height:1.12;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+body.beta-ui .tile.bt-mini .tt{margin-top:1px}
+body.beta-ui .tile.bt-mini .bank-keepers{margin-top:4px;gap:1px}
+/* the tab bar floats above the bottom edge, with a glowing pill on the page you're on */
+body.beta-ui .tabbar{left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));padding:5px;gap:2px;border:2px solid rgba(13,10,34,.95);border-radius:24px;background:linear-gradient(180deg,rgba(56,48,128,.88),rgba(20,16,52,.94));box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 12px 30px rgba(0,0,0,.55)}
+body.beta-ui .tab{border-radius:18px;padding:6px 2px 5px;transition:background .2s,color .2s}
+body.beta-ui .tab svg{transition:transform .2s}
+body.beta-ui .tab[aria-current="page"]{color:var(--sun-hi);background:radial-gradient(80% 70% at 50% 0%,rgba(255,201,60,.32),transparent 70%),linear-gradient(180deg,#5a4fd0,#3a3290);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 0 0 2px rgba(13,10,34,.9),0 4px 12px rgba(90,79,208,.55)}
+body.beta-ui .tab[aria-current="page"] svg{transform:translateY(-2px) scale(1.1)}
+body.beta-ui .tab[aria-current="page"]::before{content:"";position:absolute;top:-6px;left:50%;width:22px;height:4px;margin-left:-11px;border-radius:3px;background:var(--sun);box-shadow:0 0 10px var(--sun)}
+/* pop-up sheets */
+body.beta-ui .sheet-card{border-width:2px;border-radius:28px 28px 0 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 -12px 40px rgba(0,0,0,.45)}
+body.beta-ui .sheet-card .grab{width:52px;background:rgba(255,255,255,.35)}
 </style>
 
 <div id="app">
@@ -4344,7 +4397,7 @@ function renderTiles(){
     b.append(dropCanvas('pumpkin',52));b.insertAdjacentHTML('beforeend','<span style="min-width:0"><span class="tk">Halloween \u00b7 Trick or Treat</span><b>'+(tk>0?tk+' Halloween token'+(tk>1?'s':'')+' ready!':kl>0?kl+' door knock'+(kl>1?'s':'')+' ready!':(KNOCK_EVERY-into)+' more win'+(KNOCK_EVERY-into>1?'s':'')+' for a token')+'</b><span class="tbar"><i style="width:'+(tk>0?100:into/KNOCK_EVERY*100)+'%"></i></span></span>');}
   if(!S.daily.claimed){const g=GIFTS[S.daily.gift||0],k=Object.keys(g)[0],b=mk('wide gift','#6be39a',()=>go('shop'));
     b.innerHTML='<span class="tico">'+GIFT_SVG+'</span><span style="min-width:0"><span class="tk">Free daily gift</span><b>'+g[k]+' '+CUR_NAME[k]+' waiting</b><span class="tt">Tap to claim it in the shop</span></span>';}
-  {const tier=passTier(S.pass.xp),done=tier>=PASS_TIERS,into=done?(S.pass.xp-PASS_TIERS*PASS_STEP)%PASS_BONUS_STEP:S.pass.xp%PASS_STEP,ready=passClaimable(),b=mk('wide'+(ready?' passr':''),'#ffd36b',()=>go('pass'));
+  {const tier=passTier(S.pass.xp),done=tier>=PASS_TIERS,into=done?(S.pass.xp-PASS_TIERS*PASS_STEP)%PASS_BONUS_STEP:S.pass.xp%PASS_STEP,ready=passClaimable(),b=mk('wide passtile'+(ready?' passr':''),'#ffd36b',()=>go('pass'));
     b.innerHTML='<span class="tico">'+passBadge(tier,46)+'</span><span style="min-width:0"><span class="tk">Rumble Pass · Starfall</span><b>'+(ready?ready+' reward'+(ready>1?'s':'')+' to claim':done?'Pass complete':'Tier '+tier+' of '+PASS_TIERS)+'</b><span class="tbar"><i style="width:'+Math.round(into/PASS_STEP*100)+'%;background:#ffd36b"></i></span></span>';}
   /* Banks: above Next unlock and Ranked */
   {const parts=bankSummary(),b=mk('wide banktile','#46b4ff',()=>openBanks());const ic=document.createElement('span');ic.className='tico bank-ico';ic.textContent='\ud83c\udfe6';b.append(ic);
@@ -5861,6 +5914,20 @@ function openBank(k){const bk=BANK_BY[k],st={fx:[]};openSheet(card=>{card.classL
     const all2=document.createElement('button');all2.className='btn sm';all2.textContent='Take everything';all2.addEventListener('click',()=>{const n=bankHas(k);if(n>0){S.bank[k]=0;S[k]+=n;done(-1,n);}else{sfx('tap');say('The bank is empty right now.');}});
     row.append(dep,wd,all1,all2);card.append(row);}
   const x=document.createElement('button');x.className='btn';x.textContent='Close';x.addEventListener('click',()=>{closeSheet();renderHome();});card.append(x);});}
+
+/* ================= Beta UI refresh =================
+   Only switched on in the beta build (RR_BETA). The look itself lives in a_css.html under body.beta-ui,
+   so the main game is not changed at all. Here we turn it on and tidy the home tiles into pairs. */
+function betaTiles(){const t=$('#tiles');if(!t||!t.querySelector)return;
+  const pass=t.querySelector('.passtile'),bank=t.querySelector('.banktile');
+  if(pass&&bank){pass.classList.remove('wide');bank.classList.remove('wide');
+    const pk=pass.querySelector('.tk');if(pk)pk.textContent='Rumble Pass';
+    const parts=bankSummary(),bb=bank.querySelector('b');if(bb)bb.textContent=parts.length?parts.length+' bank'+(parts.length>1?'s':'')+' in use':'Save your stuff';}
+  const nx=[...t.children].filter(x=>!x.classList.contains('wide'));for(const x of nx)x.classList.add('bt-mini');}
+if(RR_BETA&&!NETS){
+  try{if(document.body&&document.body.classList)document.body.classList.add('beta-ui');}catch(e){}
+  {const _rt=renderTiles;renderTiles=function(){const r=_rt.apply(this,arguments);try{betaTiles();}catch(e){}return r;};}
+}
 
 /* ---------- Shop ---------- */
 const GIFTS=[{coins:100},{gems:10},{pp:60}];

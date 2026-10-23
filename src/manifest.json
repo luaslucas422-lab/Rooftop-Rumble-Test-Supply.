@@ -1,6 +1,6 @@
 {
  "name": "Rooftop Rumble test supply",
- "version": "2026-10-23T09:45Z",
+ "version": "2026-10-23T10:07Z",
  "files": [
   "00_head.html",
   "01_icons.html",
@@ -23,6 +23,7 @@
   "q_solars.js",
   "r_fp.js",
   "s_banks.js",
+  "t_betaui.js",
   "k_ui2.js",
   "99_tail.html"
  ]
