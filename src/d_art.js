@@ -431,10 +431,11 @@ const SECRET_IMG=(()=>{if(typeof Image==='undefined')return null;const i=new Ima
 /* Solar pins: step I gives the plain one, step II the animated one */
 const SOLAR_PINS=SOLAR_LEVELS.flatMap((L,i)=>[['sol'+(i+1),L.name+' Sun'],['sol'+(i+1)+'a',L.name+' Sun \u2728 animated']]).concat([['sol11','Soldar Sun'],['sol11a','Soldar Sun \u2728 animated'],['sdr_crown','Soldar Crown'],['sdr_flame','Soldar Flame'],['sdr_gg','Soldar GG'],['sdr_eye','Soldar Eye']]);
 const TESTER_PINS=[['tester','Beta Tester']];
+const SUPER_PINS=[['passclub','Pass Club']];
 const SEASON_PINS=[['meteorshower','Meteor Shower'],['nebula','Nebula'],['supernova','Supernova']];
 const TROLL_PINS=[['noob','Noob'],['ratio','Ratio'],['lol','LOL'],['cope','Cope'],['bozo','Bozo'],['bruh','Bruh']];
 const SHOP_PINS=()=>PREMIUM_PINS.concat(TOXIC_PINS,DAILY_ONLY_PINS,TROLL_PINS,GEN_PINS,FRIENDLY_PINS);
-const pinName=id=>{if(id==='secretking'||id==='b:secretking')return'Secret King';if(/^sk:/.test(id)){const[,b,k,f]=id.split(':');return BY_ID[b]?getSkin(BY_ID[b],k).name+' '+BY_ID[b].name+(f?' ('+f+')':''):id;}const p=SHOP_PINS().concat(HALLOWEEN_PINS,BASIC_PINS,PASS_PINS,RANK_PINS,SET_PINS,SEASON_PINS,SECRET_PINS,SOLAR_PINS,TESTER_PINS).find(x=>x[0]===id||'b:'+x[0]===id);if(p)return p[1];if(/^pr:/.test(id)){const[,b,t]=id.split(':');return(BY_ID[b]?BY_ID[b].name:'')+' '+t[0].toUpperCase()+t.slice(1)+' prestige';}return id;};
+const pinName=id=>{if(id==='secretking'||id==='b:secretking')return'Secret King';if(/^sk:/.test(id)){const[,b,k,f]=id.split(':');return BY_ID[b]?getSkin(BY_ID[b],k).name+' '+BY_ID[b].name+(f?' ('+f+')':''):id;}const p=SHOP_PINS().concat(HALLOWEEN_PINS,BASIC_PINS,PASS_PINS,RANK_PINS,SET_PINS,SEASON_PINS,SECRET_PINS,SOLAR_PINS,TESTER_PINS,SUPER_PINS).find(x=>x[0]===id||'b:'+x[0]===id);if(p)return p[1];if(/^pr:/.test(id)){const[,b,t]=id.split(':');return(BY_ID[b]?BY_ID[b].name:'')+' '+t[0].toUpperCase()+t.slice(1)+' prestige';}return id;};
 /* "I reached …" rank pins: that rank set's rumbler's skin holding up a sign */
 /* Prestige pins: the rumbler in its prestige skin, with a tier ribbon and number badge */
 function drawPrestigePin(c,R,lw,b,tier){const T={bronze:['#ffd2a8','#a8582a','#e7a36b','#6e3412','BRONZE','50','pr_bronze'],silver:['#ffffff','#7f8aa3','#d6dbe8','#3d4660','SILVER','150','pr_charged'],gold:['#fff6b0','#e07a12','#ffd23f','#7a4300','GOLD','250','pr_super']}[tier]||[];
@@ -472,6 +473,7 @@ function drawPin(c,id,x,y,s){
   const face=(col)=>{c.beginPath();c.arc(0,0,R*.92,0,TAU);c.fillStyle=col;c.fill();c.stroke();c.fillStyle='rgba(255,255,255,.35)';ell(c,-R*.35,-R*.45,R*.28,R*.16);c.fill();};
   const eyes=(sq)=>{c.fillStyle=OUT;for(const sx of[-1,1]){if(sq){c.beginPath();c.moveTo(sx*R*.5,-R*.15);c.quadraticCurveTo(sx*R*.32,-R*.38,sx*R*.14,-R*.15);c.stroke();}else{ell(c,sx*R*.32,-R*.18,R*.11,R*.15);c.fill();}}};
   const p=id.split(':');
+  if(id==='b:passclub'){c.beginPath();c.arc(0,0,R*.98,0,TAU);const bg=c.createRadialGradient(0,-R*.3,R*.1,0,0,R);bg.addColorStop(0,'#c2124a');bg.addColorStop(1,'#3a0618');c.fillStyle=bg;c.fill();c.lineWidth=lw*1.2;c.strokeStyle='#ffd23f';c.stroke();drawSuperMark(c,0,R*.06,R*1.62);c.restore();return;}
   if(id==='b:tester'){c.beginPath();c.arc(0,0,R*.98,0,TAU);const bg=c.createRadialGradient(0,-R*.3,R*.1,0,0,R);bg.addColorStop(0,'#4a2f8a');bg.addColorStop(1,'#1b1046');c.fillStyle=bg;c.fill();c.lineWidth=lw*1.2;c.strokeStyle='#2de0b0';c.stroke();drawTesterFlask(c,0,R*.02,R*.8,T);c.restore();return;}
   if(p[0]==='b'&&/^sdr_/.test(p[1]||'')){const k=p[1].slice(4);c.beginPath();c.arc(0,0,R*.98,0,TAU);const bg=c.createRadialGradient(0,-R*.3,R*.1,0,0,R);bg.addColorStop(0,'#3b1f2e');bg.addColorStop(1,'#0b0610');c.fillStyle=bg;c.fill();c.lineWidth=lw*1.3;c.strokeStyle='#ffd23f';c.stroke();c.lineWidth=lw;c.strokeStyle=OUT;
     if(k==='crown'){c.beginPath();c.moveTo(-R*.55,R*.3);c.lineTo(-R*.62,-R*.3);c.lineTo(-R*.28,-R*.02);c.lineTo(0,-R*.5);c.lineTo(R*.28,-R*.02);c.lineTo(R*.62,-R*.3);c.lineTo(R*.55,R*.3);c.closePath();c.fillStyle='#ffd23f';c.fill();c.stroke();c.fillStyle='#ff3b5c';c.beginPath();c.arc(0,R*.08,R*.11,0,TAU);c.fill();}

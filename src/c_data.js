@@ -338,6 +338,13 @@ const THEMES=[
 ];
 /* Season 1 Rumble Pass exclusive skins: only from the pass, never sold */
 const PASS_SKIN_IDS=['ember','bolt','pip','woodrow','zenith'];
+/* Rumble Pass SUPER Season 1 skins: crowned SUPER variants, only on the SUPER reward row */
+const SUPER_SKINS=[
+ {rid:'spritz',skin:{id:'sup_ruby',name:'SUPER Ruby',tier:'pass',body:'#c2124a',belly:'#ffd6e2',accent:'#ffd23f',proj:'#ffd23f',eye:'#fff3a6',hat:'crown',shine:true,glow:'#ff3d6e'}},
+ {rid:'boulder',skin:{id:'sup_gold',name:'SUPER Gold',tier:'pass',body:'#f0b429',belly:'#fff3c4',accent:'#c2124a',proj:'#ff3d6e',hat:'crown',shine:true,glow:'#ffd23f'}},
+ {rid:'luna',skin:{id:'sup_rose',name:'SUPER Rose',tier:'pass',body:'#ff7aa0',belly:'#fff0f5',accent:'#ffd23f',proj:'#ff9cbc',hat:'crown',shine:true,glow:'#ff9cbc'}},
+ {rid:'echo',skin:{id:'sup_midnight',name:'SUPER Midnight',tier:'pass',body:'#1a0a14',belly:'#5c0626',accent:'#ffd23f',proj:'#ff3d6e',eye:'#ffd23f',hat:'crown',starry:true,glow:'#ff3d6e'}},
+ {rid:'astra',skin:{id:'sup_royal',name:'SUPER Royal',tier:'pass',body:'#5a1fb8',belly:'#e6d4ff',accent:'#ffd23f',proj:'#ffd23f',eye:'#fff3a6',hat:'crown',shine:true,starry:true,glow:'#ffd23f'}}];
 const STARFALL={id:'starfall',name:'Starfall',tier:'pass',body:'#1d1b52',belly:'#3b3399',accent:'#ffd36b',proj:'#ffd36b',eye:'#ffe9a6',hat:'halo',starry:true,glow:'#ffd36b'};
 const MASTER_SKIN={id:'master',name:'Grandmaster',tier:'master',body:'#1b1430',belly:'#4a2f7a',accent:'#ffd23f',proj:'#ffd23f',eye:'#ffd23f',hat:'crown',glow:'#ff5e87',shine:true};
 /* Rank sets: the first time you reach a rank you get a rank skin (Ember for Grandmaster, a random rumbler for the rest) and an "I reached …" pin of Ember holding a sign.
@@ -435,6 +442,7 @@ const DARK_DROPS=15;
 const EX_COL='#2de0b0';
 const EXCLUSIVE_SKINS=[
  {rid:'ember',stat:'pins',goal:100,how:'Send 100 pins in matches',skin:{id:'ex_emoji',name:'Emoji',tier:'exclusive',body:'#ffd23f',belly:'#fff3a6',accent:'#ff8a1f',proj:'#ffd23f',hat:'party',grin:true,sprinkles:true}},
+ {rid:'marlo',stat:'super',goal:1,how:'Get Rumble Pass SUPER once (any season)',skin:{id:'ex_passclub',name:'Pass Club',tier:'exclusive',body:'#16121f',belly:'#ffd23f',accent:'#ff3d6e',proj:'#ffd23f',eye:'#ffd23f',hat:'fedora',hatCol:'#c2124a',shine:true,glow:'#ffd23f'}},
  {rid:'ember',stat:'rid',goal:1,how:'Sign in with a Rumble ID (\u2630 menu)',skin:{id:'ex_rid',name:'Rumble ID',tier:'exclusive',body:'#2a7fd0',belly:'#e8f4ff',accent:'#ffd23f',proj:'#7ad7ff',eye:'#ffd23f',hat:'visor',glow:'#7ad7ff',scan:true}},
  {rid:'boulder',stat:'sims',goal:10,how:'Run 10 simulations (\u2630 menu)',skin:{id:'ex_robo',name:'Robo',tier:'exclusive',body:'#8fa3b8',belly:'#dce6ef',accent:'#ff3b5c',proj:'#46e0ff',eye:'#46e0ff',hat:'antenna',glow:'#46e0ff',rivets:true,scan:true}},
  {rid:'luna',stat:'replays',goal:5,how:'Watch 5 replays (\u2630 menu)',skin:{id:'ex_noir',name:'Film Noir',tier:'exclusive',body:'#2d2d33',belly:'#e9e9ec',accent:'#ffffff',proj:'#f2f2f2',eye:'#ffffff',hat:'fedora',rim:'#ffffff',grain:true}},
@@ -490,6 +498,7 @@ function skinsOf(b){
   if(b.id==='juggler')list.push({...base,...MAID_SKIN,boxy:!!b.boxy});
   for(const e of EXCLUSIVE_SKINS)if(e.rid===b.id)list.push({...base,...e.skin,boxy:!!b.boxy});
   for(const x of SOLAR_SKINS.concat(SOLDAR_SKINS))if(x.rid===b.id)list.push({...base,...x.skin,boxy:!!b.boxy});
+  for(const x of SUPER_SKINS)if(x.rid===b.id)list.push({...base,...x.skin,boxy:!!b.boxy});
   if(b.id==='ember')list.push({...base,...TESTER_SKIN,boxy:!!b.boxy});
   list.push({...base,...b.sig,id:'sig',tier:'sig'});
   return(b._skins=list);
@@ -613,11 +622,11 @@ const PASS_PREM=[{skin:'ember'},{gems:10},{drop:'season'},{coins:300},{pin:'come
  {drop:'rbox'},{gems:30},{pin:'nebula'},{chromos:1200},{drop:'sbox'},{coins:700},{drop:'legendary'},{pin:'meteorshower'},{drop:'season',n:2},{drop:'rbox'},
  {gems:40},{drop:'ultra'},{pin:'supernova'},{drop:'season',n:3},{rumbler:'orion'}];
 /* Rumble Pass SUPER: one extra, bigger reward under every Rumble Pass reward. Tier 23 (the middle) is a Mythic of your choice. */
-const PASS_SUPER=[{gems:10},{coins:500},{drop:'epic',n:2},{chromos:800},{pp:300},{drop:'rbox'},{gems:15},{coins:700},{drop:'legendary'},{chromos:1000},
- {pp:400},{drop:'sbox'},{gems:20},{coins:900},{drop:'season',n:3},{chromos:1200},{drop:'legendary',n:2},{pp:500},{drop:'rbox',n:2},{gems:25},
- {coins:1000},{drop:'ultra'},{mythic:1},{chromos:1500},{pp:600},{drop:'sbox',n:2},{gems:30},{coins:1200},{drop:'legendary',n:2},{chromos:1800},
- {drop:'rbox',n:2},{pp:700},{gems:40},{drop:'ultra'},{coins:1500},{chromos:2000},{drop:'season',n:4},{pp:800},{drop:'sbox',n:2},{gems:60},
- {drop:'ultra',n:2},{coins:2000},{chromos:2500},{drop:'rbox',n:3},{drop:'ultra',n:3}];
+const PASS_SUPER=[{skin:'spritz',sid:'sup_ruby'},{chromos:1000},{drop:'legendary'},{drop:'rbox'},{gems:15},{drop:'legendary'},{drop:'ultra'},{drop:'rbox'},{chromos:1000},{skin:'boulder',sid:'sup_gold'},
+ {drop:'legendary'},{drop:'rbox'},{coins:1000},{drop:'legendary'},{chromos:1500},{drop:'rbox'},{drop:'sbox'},{drop:'legendary'},{drop:'ultra'},{skin:'luna',sid:'sup_rose'},
+ {drop:'rbox'},{gems:25},{mythic:1},{drop:'legendary'},{chromos:1500},{drop:'rbox'},{pp:500},{drop:'legendary'},{drop:'ultra'},{skin:'echo',sid:'sup_midnight'},
+ {drop:'rbox'},{chromos:1500},{drop:'legendary'},{coins:1500},{drop:'rbox'},{drop:'ultra'},{chromos:1500},{pp:800},{drop:'sbox'},{drop:'ultra'},
+ {drop:'legendary',n:2},{drop:'rbox',n:2},{gems:40},{chromos:2000},{skin:'astra',sid:'sup_royal'}];
 const SUPER_MYTHIC_TIER=PASS_SUPER.findIndex(r=>r.mythic);
 const passTier=xp=>Math.min(PASS_TIERS,Math.floor(xp/PASS_STEP));
 const bonusAvail=xp=>Math.max(0,Math.floor((xp-PASS_TIERS*PASS_STEP)/PASS_BONUS_STEP));
@@ -640,7 +649,7 @@ const PF_BANNERS=[
  {id:'b_gold',name:'Gold Rush',css:'linear-gradient(135deg,#7a4a00,#ffd23f 50%,#fff3a6)',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'b_solar',name:'Solar Flare',css:'radial-gradient(circle at 80% 30%,#fffbe6 0 8%,#ffd23f 12%,#ff8a1f 34%,#c4366f 66%,#3a0a24)',ok:()=>solDone(5),how:'Finish Solar level 5'},
  {id:'b_rainbow',name:'Rainbow',css:'linear-gradient(135deg,'+RB_LINE+')',ok:isMaster,how:'Reach Master in ranked'},
- {id:'b_super',name:'Super Pass',css:'radial-gradient(circle at 14% 26%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 84% 68%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 62% 18%,#ffe48a 0 1.3px,transparent 2.3px),radial-gradient(circle at 36% 78%,#ffe48a 0 1.1px,transparent 2px),repeating-linear-gradient(120deg,rgba(255,210,63,.2) 0 9px,transparent 9px 26px),linear-gradient(135deg,#4a0420,#d1124f 52%,#ffb000)',ok:()=>hasSuper(),how:'Get Rumble Pass SUPER'}];
+ {id:'b_super',name:'Pass Club',css:'radial-gradient(circle at 14% 26%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 84% 68%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 62% 18%,#ffe48a 0 1.3px,transparent 2.3px),radial-gradient(circle at 36% 78%,#ffe48a 0 1.1px,transparent 2px),repeating-linear-gradient(120deg,rgba(255,210,63,.2) 0 9px,transparent 9px 26px),linear-gradient(135deg,#4a0420,#d1124f 52%,#ffb000)',ok:()=>!!S.superEver,how:'Get Rumble Pass SUPER once'}];
 const PF_FRAMES=[
  {id:'f_none',name:'None',css:''},
  {id:'f_silver',name:'Silver',css:'linear-gradient(135deg,#ffffff,#9aa3c7)'},
@@ -667,7 +676,7 @@ const PF_TITLES=[
  {id:'t_king',name:'Takedown King',ok:()=>(S.st.kills|0)>=500,how:'Get 500 takedowns'},
  {id:'t_marathon',name:'Marathoner',ok:()=>stMatches()>=300,how:'Play 300 matches'},
  {id:'t_pass',name:'Pass Master',ok:()=>passTier(S.pass.xp|0)>=45,how:'Reach Rumble Pass tier 45'},
- {id:'t_super',name:'Super Rumbler',ok:()=>hasSuper(),how:'Get Rumble Pass SUPER'},
+ {id:'t_super',name:'Pass Club',ok:()=>!!S.superEver,how:'Get Rumble Pass SUPER once'},
  {id:'t_trend',name:'Trendsetter',ok:()=>exCount()>=5,how:'Earn 5 exclusive skins'},
  {id:'t_legend',name:'Legend',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'t_master',name:'Master',ok:isMaster,how:'Reach Master in ranked'},
