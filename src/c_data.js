@@ -621,13 +621,14 @@ const PASS_PREM=[{skin:'ember'},{gems:10},{drop:'season'},{coins:300},{pin:'come
  {pp:250},{skin:'woodrow'},{chromos:1000},{drop:'mythic'},{drop:'rbox'},{coins:600},{drop:'legendary'},{skin:'zenith'},{drop:'ultra'},{drop:'season',n:2},
  {drop:'rbox'},{gems:30},{pin:'nebula'},{chromos:1200},{drop:'sbox'},{coins:700},{drop:'legendary'},{pin:'meteorshower'},{drop:'season',n:2},{drop:'rbox'},
  {gems:40},{drop:'ultra'},{pin:'supernova'},{drop:'season',n:3},{rumbler:'orion'}];
-/* Rumble Pass SUPER: one extra, bigger reward under every Rumble Pass reward. Tier 23 (the middle) is a Mythic of your choice. */
-const PASS_SUPER=[{skin:'spritz',sid:'sup_ruby'},{chromos:1000},{drop:'legendary'},{drop:'rbox'},{gems:15},{drop:'legendary'},{drop:'ultra'},{drop:'rbox'},{chromos:1000},{skin:'boulder',sid:'sup_gold'},
- {drop:'legendary'},{drop:'rbox'},{coins:1000},{drop:'legendary'},{chromos:1500},{drop:'rbox'},{drop:'sbox'},{drop:'legendary'},{drop:'ultra'},{skin:'luna',sid:'sup_rose'},
- {drop:'rbox'},{gems:25},{mythic:1},{drop:'legendary'},{chromos:1500},{drop:'rbox'},{pp:500},{drop:'legendary'},{drop:'ultra'},{skin:'echo',sid:'sup_midnight'},
- {drop:'rbox'},{chromos:1500},{drop:'legendary'},{coins:1500},{drop:'rbox'},{drop:'ultra'},{chromos:1500},{pp:800},{drop:'sbox'},{drop:'ultra'},
- {drop:'legendary',n:2},{drop:'rbox',n:2},{gems:40},{chromos:2000},{skin:'astra',sid:'sup_royal'}];
-const SUPER_MYTHIC_TIER=PASS_SUPER.findIndex(r=>r.mythic);
+/* Rumble Pass SUPER: bigger extra rewards on every other tier (null = no SUPER reward there). Tier 23 (the middle) is a Mythic of your choice. */
+const PASS_SUPER=[{skin:'spritz',sid:'sup_ruby'},null,{drop:'legendary',n:2},null,{drop:'rbox',n:2},null,{chromos:3000},null,{drop:'ultra'},null,
+ {skin:'boulder',sid:'sup_gold'},null,{drop:'legendary',n:2},null,{drop:'rbox',n:2},null,{drop:'sbox',n:2},null,{drop:'legendary',n:2},null,
+ {skin:'luna',sid:'sup_rose'},null,{mythic:1},null,{drop:'rbox',n:2},null,{chromos:3000},null,{drop:'ultra',n:2},null,
+ {skin:'echo',sid:'sup_midnight'},null,{drop:'legendary',n:2},null,{drop:'rbox',n:2},null,{chromos:4000},null,{drop:'legendary',n:2},null,
+ {drop:'ultra',n:2},null,{drop:'rbox',n:2},null,{skin:'astra',sid:'sup_royal'}];
+const SUPER_COUNT=PASS_SUPER.filter(Boolean).length;
+const SUPER_MYTHIC_TIER=PASS_SUPER.findIndex(r=>r&&r.mythic);
 const passTier=xp=>Math.min(PASS_TIERS,Math.floor(xp/PASS_STEP));
 const bonusAvail=xp=>Math.max(0,Math.floor((xp-PASS_TIERS*PASS_STEP)/PASS_BONUS_STEP));
 

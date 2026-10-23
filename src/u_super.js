@@ -32,15 +32,15 @@ function passEmblem(size,o){o=o||{};const sup=o.super!=null?!!o.super:hasSuper()
 function passEmblemEl(size,o){const sp=document.createElement('span');sp.className='rpe-wrap'+(o&&o.cls?' '+o.cls:'');sp.innerHTML=passEmblem(size,o);return sp;}
 try{Object.defineProperty(ICON,'rpass',{get:()=>passEmblem(22),enumerable:false});}catch(e){}
 const PASS_SUPER_GEMS=300,PASS_SUPER_UP=150,SUPER_CHROMOS=11000;
-/* +25% instant progress the first time you get the Rumble Pass or SUPER (once per season, they don't stack) */
-const PASS_BOOST=Math.round(PASS_TIERS*PASS_STEP*.25),PASS_BOOST_TIERS=Math.floor(PASS_BOOST/PASS_STEP);
+/* +35% instant progress the first time you get the Rumble Pass or SUPER (once per season, they don't stack) */
+const PASS_BOOST_PCT=35,PASS_BOOST=Math.round(PASS_TIERS*PASS_STEP*PASS_BOOST_PCT/100),PASS_BOOST_TIERS=Math.floor(PASS_BOOST/PASS_STEP);
 function passBoost(){if(S.pass.boost)return 0;S.pass.xp+=PASS_BOOST;S.pass.boost=true;return PASS_BOOST;}
-function passBoostToast(n){if(n)setTimeout(()=>toast('+25% instant progress! +'+fmtFull(n)+' pass tokens','pass'),700);}
+function passBoostToast(n){if(n)setTimeout(()=>toast('+'+PASS_BOOST_PCT+'% instant progress! +'+fmtFull(n)+' pass tokens','pass'),700);}
 function superPrice(){return S.pass.premium?PASS_SUPER_UP:PASS_SUPER_GEMS;}
 function superMythics(){return RUMBLERS.filter(b=>b.rarity==='mythic'&&!b.eventOnly&&!b.beta);}
 function superPickPending(){return hasSuper()&&(S.pass.cs||[]).includes(SUPER_MYTHIC_TIER)&&!S.pass.superPick;}
 /* claim one SUPER reward (they sit underneath the Rumble Pass rewards) */
-function claimSuper(i,quiet){S.pass.cs=S.pass.cs||[];if(!hasSuper()||i>=passTier(S.pass.xp)||S.pass.cs.includes(i))return false;
+function claimSuper(i,quiet){S.pass.cs=S.pass.cs||[];if(!PASS_SUPER[i]||!hasSuper()||i>=passTier(S.pass.xp)||S.pass.cs.includes(i))return false;
   const rw=PASS_SUPER[i];S.pass.cs.push(i);giveReward(rw);
   if(!quiet){persist();sfx('unlock');
     if(rw.mythic){if(superGrantChromosIfDone()){toast('+'+fmtFull(SUPER_CHROMOS)+' chromos · you have every Mythic','chromos');}else if(superPickPending()){renderPass();updateShopDot();openSuperPick();return true;}else toast('You already picked your Mythic','pass');}
@@ -49,10 +49,10 @@ function claimSuper(i,quiet){S.pass.cs=S.pass.cs||[];if(!hasSuper()||i>=passTier
   return true;}
 function superMythicVisual(size){const w=document.createElement('span');w.className='sup-myst';w.style.width=w.style.height=size+'px';w.style.fontSize=Math.round(size*.5)+'px';
   const pick=S.pass.superPick&&BY_ID[S.pass.superPick],b=pick||superMythics().find(x=>!S.owned[x.id])||BY_ID.vex,t=thumb(b,getSkin(b,'classic'),size);if(!pick)t.classList.add('myst');w.append(t);if(!pick)w.insertAdjacentHTML('beforeend','<i>?</i>');return w;}
-function superClaimable(i,tier){return hasSuper()&&i<tier&&!(S.pass.cs||[]).includes(i);}
+function superClaimable(i,tier){return!!PASS_SUPER[i]&&hasSuper()&&i<tier&&!(S.pass.cs||[]).includes(i);}
 function superNudge(){toast('Get Rumble Pass SUPER to claim the SUPER reward','rpass');const c=document.querySelector('.sup-card');if(c&&c.scrollIntoView)c.scrollIntoView({behavior:'smooth',block:'start'});}
 /* the SUPER reward lives in the same slot as the Rumble Pass reward: it slowly slides up over it, then back down */
-function superFace(b,i,tier){const rw=PASS_SUPER[i],got=(S.pass.cs||[]).includes(i),own=hasSuper(),ok=superClaimable(i,tier),my=!!rw.mythic;
+function superFace(b,i,tier){if(!PASS_SUPER[i])return;const rw=PASS_SUPER[i],got=(S.pass.cs||[]).includes(i),own=hasSuper(),ok=superClaimable(i,tier),my=!!rw.mythic;
   b.classList.add('has-sup');if(my)b.classList.add('smyth-cell');
   const f=document.createElement('span');f.className='sface'+(my?' smyth':'')+(got?' sgot':'')+(own?'':' snot');f.setAttribute('aria-hidden','true');
   f.insertAdjacentHTML('beforeend','<span class="stag">'+passEmblem(14,{super:true})+'SUPER</span>');f.append(rewardVisual(rw,my?50:44));
@@ -61,7 +61,7 @@ function superFace(b,i,tier){const rw=PASS_SUPER[i],got=(S.pass.cs||[]).includes
 /* one tap claims both the Rumble Pass reward and the SUPER reward of a tier */
 function superClaimTier(i,passOk){const parts=[];
   if(passOk&&claimPass(i,true,true))parts.push(rewardLabel(PASS_PREM[i]));
-  const rw=PASS_SUPER[i];if(claimSuper(i,true)&&!rw.mythic)parts.push('SUPER: '+rewardLabel(rw));
+  const rw=PASS_SUPER[i]||{};if(claimSuper(i,true)&&!rw.mythic)parts.push('SUPER: '+rewardLabel(rw));
   persist();sfx('unlock');
   if(rw.mythic&&superGrantChromosIfDone())parts.push('SUPER: +'+fmtFull(SUPER_CHROMOS)+' chromos (you have every Mythic)');
   if(parts.length)toast(parts.join(' + '),'rpass');
@@ -82,10 +82,10 @@ function superCard(){const c=document.createElement('div');c.className='sup-card
   hd.insertAdjacentHTML('beforeend','<div style="min-width:0"><p class="of-kick sup-kick">Version 2 of the Rumble Pass</p><h2>Rumble Pass SUPER</h2><p class="hint">Everything in the Rumble Pass, plus:</p></div>');c.append(hd);
   const ul=document.createElement('ul');ul.className='sup-perks';
   const li=(vis,b,sm)=>{const l=document.createElement('li');const pv=document.createElement('span');pv.className='pv';pv.append(vis);l.append(pv);l.insertAdjacentHTML('beforeend','<span style="min-width:0"><b>'+b+'</b>'+(sm?'<small>'+sm+'</small>':'')+'</span>');ul.append(l);};
-  {const v=document.createElement('span');v.className='sup-mys';for(const d of['rbox','ultra','legendary'])v.append(dropCanvas(d,38));li(v,PASS_TIERS+' extra SUPER rewards','10 Rumbler Boxes, 2 Skin Boxes, 5 Amazing Drops, 10 Legendary Drops and 10,000 chromos, plus gems, coins and power points');}
+  {const v=document.createElement('span');v.className='sup-mys';for(const d of['rbox','ultra','legendary'])v.append(dropCanvas(d,38));li(v,SUPER_COUNT+' big SUPER rewards','On every other tier: 10 Rumbler Boxes, 2 Skin Boxes, 5 Amazing Drops, 10 Legendary Drops and 10,000 chromos');}
   {const v=document.createElement('span');v.className='sup-mys';for(const x of SUPER_SKINS.slice(0,3))v.append(thumb(BY_ID[x.rid],getSkin(BY_ID[x.rid],x.skin.id),40));li(v,SUPER_SKINS.length+' SUPER skins','Crowned Season 1 skins: '+SUPER_SKINS.map(x=>x.skin.name.replace('SUPER ','')+' '+BY_ID[x.rid].name).join(', '));}
   li(superMythicVisual(44),'A Mythic of your choice','In the middle of the pass at tier '+(SUPER_MYTHIC_TIER+1)+(left?'. Pick any Mythic you don’t have yet':'. You have every Mythic, so you get '+fmtFull(SUPER_CHROMOS)+' chromos instead'));
-  if(!S.pass.boost){const v=document.createElement('span');v.className='boost-badge';v.textContent='+25%';li(v,'+25% instant progress','Jump about '+PASS_BOOST_TIERS+' tiers ahead the moment you get it');}
+  if(!S.pass.boost){const v=document.createElement('span');v.className='boost-badge';v.textContent='+'+PASS_BOOST_PCT+'%';li(v,'+'+PASS_BOOST_PCT+'% instant progress','Jump about '+PASS_BOOST_TIERS+' tiers ahead the moment you get it');}
   {const ex=EXCLUSIVE_SKINS.find(e=>e.stat==='super'),bb=BY_ID[ex.rid];li(thumb(bb,getSkin(bb,ex.skin.id),46),'Pass Club exclusive'+(S.superEver?' (you have it)':''),'Get SUPER once and keep the Pass Club '+bb.name+' skin, pin, profile icon, title and banner forever. They show up in Exclusives');}
   if(!up)li(passEmblemEl(40,{super:false}),'The whole Rumble Pass','All '+PASS_TIERS+' premium rewards, Starfall skins and Orion');
   c.append(ul);
@@ -99,9 +99,9 @@ function superReveal(bnShown){const auto=superGrantChromosIfDone();if(auto)super
     const w=document.createElement('div');w.className='ex-burst';w.append(passEmblemEl(140,{super:true,cls:'rpe-buy'}));card.append(w);
     const rw=document.createElement('div');rw.className='sol-rlist';
     const add=(vis,lab)=>{const d=document.createElement('div');d.append(vis);d.insertAdjacentHTML('beforeend','<span>'+lab+'</span>');rw.append(d);};
-    {const v=document.createElement('span');v.className='sup-mys';for(const x of SUPER_SKINS.slice(0,2))v.append(thumb(BY_ID[x.rid],getSkin(BY_ID[x.rid],x.skin.id),36));add(v,'A SUPER reward in every pass slot: '+SUPER_SKINS.length+' SUPER skins, boxes, drops and a Mythic at tier '+(SUPER_MYTHIC_TIER+1));}
+    {const v=document.createElement('span');v.className='sup-mys';for(const x of SUPER_SKINS.slice(0,2))v.append(thumb(BY_ID[x.rid],getSkin(BY_ID[x.rid],x.skin.id),36));add(v,SUPER_COUNT+' SUPER rewards on every other tier: '+SUPER_SKINS.length+' SUPER skins, boxes, drops and a Mythic at tier '+(SUPER_MYTHIC_TIER+1));}
     {const ex=EXCLUSIVE_SKINS.find(e=>e.stat==='super'),bb=BY_ID[ex.rid];add(thumb(bb,getSkin(bb,ex.skin.id),40),'Pass Club exclusive: '+bb.name+' skin, pin, icon, title and banner (in Exclusives)');}
-    add(passEmblemEl(40,{super:false}),'Every Rumble Pass reward');if(bnShown){const v=document.createElement('span');v.className='boost-badge';v.textContent='+25%';add(v,'+25% instant pass progress');}
+    add(passEmblemEl(40,{super:false}),'Every Rumble Pass reward');if(bnShown){const v=document.createElement('span');v.className='boost-badge';v.textContent='+'+PASS_BOOST_PCT+'%';add(v,'+'+PASS_BOOST_PCT+'% instant pass progress');}
     if(auto){const sp=document.createElement('span');sp.className='sup-cico';sp.innerHTML=ICON.chromos;add(sp,'+'+fmtFull(SUPER_CHROMOS)+' chromos (you have every Mythic)');}
     card.append(rw);
     if(superPickPending()){const p=document.createElement('button');p.className='btn gold sup-pick-btn';p.textContent='Choose your free Mythic';p.addEventListener('click',openSuperPick);card.append(p);}
