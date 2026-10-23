@@ -71,7 +71,8 @@ function openSandbox(){openSheet(card=>{card.classList.add('sbx');
     const rk=document.createElement('div');rk.className='sbx-row';rk.innerHTML='<label><b>Rank</b><small>Ranked mode rank</small></label>';const sel=document.createElement('select');
     for(let i=0;i<RANK_STEPS;i++){const o=document.createElement('option');o.value=String(i);o.textContent=rankInfo(i*100).name;if(rankInfo(S.rp|0).i===i)o.selected=true;sel.append(o);}
     sel.addEventListener('change',()=>{const i=+sel.value;S.rp=i*100;S.rankPeak=Math.max(S.rankPeak|0,i);S.rankTop=Math.max(S.rankTop|0,rankInfo(i*100).tier);persist();renderHome();sfx('tap');});rk.append(sel);s.append(rk);
-    s.append(sbxPills('Rumble Pass',[[true,'Premium'],[false,'Free only']],()=>!!S.pass.premium,v=>{S.pass.premium=v;persist();}));
+    s.append(sbxPills('Rumble Pass',[[true,'Premium'],[false,'Free only']],()=>!!S.pass.premium,v=>{S.pass.premium=v;if(!v)S.pass.super=false;persist();}));
+    s.append(sbxPills('Rumble Pass SUPER',[[true,'On'],[false,'Off']],()=>!!S.pass.super,v=>{S.pass.super=v;if(v)S.pass.premium=true;else S.pass.superPick=null;persist();renderHome();}));
     s.append(sbxBtn('Reset pass claims','',()=>{S.pass.cf=[];S.pass.cp=[];persist();sfx('tap');toast('Pass rewards can be claimed again');}));}
   {const s=sbxSec(card,'Give drops & boxes','#9d7bff');let n=1;s.append(sbxPills('How many',[[1,'×1'],[5,'×5'],[10,'×10'],[25,'×25']],()=>n,v=>n=v));
     const g=document.createElement('div');g.className='sbx-drops';

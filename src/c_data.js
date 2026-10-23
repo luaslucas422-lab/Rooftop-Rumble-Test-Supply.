@@ -632,7 +632,8 @@ const PF_BANNERS=[
  {id:'b_exclusive',name:'Exclusive',css:'linear-gradient(135deg,#053a30,#1a9c80 55%,#7dffd9)',ok:()=>exCount()>=3,how:'Earn 3 exclusive skins'},
  {id:'b_gold',name:'Gold Rush',css:'linear-gradient(135deg,#7a4a00,#ffd23f 50%,#fff3a6)',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'b_solar',name:'Solar Flare',css:'radial-gradient(circle at 80% 30%,#fffbe6 0 8%,#ffd23f 12%,#ff8a1f 34%,#c4366f 66%,#3a0a24)',ok:()=>solDone(5),how:'Finish Solar level 5'},
- {id:'b_rainbow',name:'Rainbow',css:'linear-gradient(135deg,'+RB_LINE+')',ok:isMaster,how:'Reach Master in ranked'}];
+ {id:'b_rainbow',name:'Rainbow',css:'linear-gradient(135deg,'+RB_LINE+')',ok:isMaster,how:'Reach Master in ranked'},
+ {id:'b_super',name:'Super Pass',css:'radial-gradient(circle at 14% 26%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 84% 68%,#fff 0 1.5px,transparent 2.5px),radial-gradient(circle at 62% 18%,#ffe48a 0 1.3px,transparent 2.3px),radial-gradient(circle at 36% 78%,#ffe48a 0 1.1px,transparent 2px),repeating-linear-gradient(120deg,rgba(255,210,63,.2) 0 9px,transparent 9px 26px),linear-gradient(135deg,#4a0420,#d1124f 52%,#ffb000)',ok:()=>hasSuper(),how:'Get Rumble Pass SUPER'}];
 const PF_FRAMES=[
  {id:'f_none',name:'None',css:''},
  {id:'f_silver',name:'Silver',css:'linear-gradient(135deg,#ffffff,#9aa3c7)'},
@@ -659,6 +660,7 @@ const PF_TITLES=[
  {id:'t_king',name:'Takedown King',ok:()=>(S.st.kills|0)>=500,how:'Get 500 takedowns'},
  {id:'t_marathon',name:'Marathoner',ok:()=>stMatches()>=300,how:'Play 300 matches'},
  {id:'t_pass',name:'Pass Master',ok:()=>passTier(S.pass.xp|0)>=45,how:'Reach Rumble Pass tier 45'},
+ {id:'t_super',name:'Super Rumbler',ok:()=>hasSuper(),how:'Get Rumble Pass SUPER'},
  {id:'t_trend',name:'Trendsetter',ok:()=>exCount()>=5,how:'Earn 5 exclusive skins'},
  {id:'t_legend',name:'Legend',ok:()=>S.best>=3000,how:'Reach 3,000 trophies'},
  {id:'t_master',name:'Master',ok:isMaster,how:'Reach Master in ranked'},
